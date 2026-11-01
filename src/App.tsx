@@ -2,21 +2,37 @@ import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import TopicCards from './TopicCards';
+import ModulDetail from './components/ModulDetail';
 import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
 import './App.css';
 
+export type Halaman = 'beranda' | 'eksplorasi-ph' | 'modul_1' | 'modul_2' | 'modul_3';
+
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
+  const [halaman, setHalaman] = useState<Halaman>('beranda');
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
     saveUserState(userState);
   }, [userState]);
 
+  // Gulir ke atas setiap kali halaman berganti (DESAIN_TEKNIS.md Bagian 4)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [halaman]);
+
+  const handleNavigate = (targetHalaman: Halaman) => {
+    setHalaman(targetHalaman);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleStartLearning = () => {
     const target = document.getElementById('modul-belajar');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      handleNavigate('modul_1');
     }
   };
 
@@ -30,17 +46,52 @@ function App() {
   return (
     <div className="app-wrapper">
       {/* 01. Navbar dengan Identitas Media ChemiVerse & Tracker Progres */}
-      <Navbar onResetProgress={handleResetProgress} />
+      <Navbar
+        onResetProgress={handleResetProgress}
+        onNavigate={handleNavigate}
+        currentPage={halaman}
+      />
 
       <main className="main-content">
-        {/* 02. Hero Section dengan Judul Edukatif & Live Johnstone Triplet Visualizer */}
-        <HeroSection onStartLearning={handleStartLearning} />
+        {halaman === 'beranda' && (
+          <>
+            {/* 02. Hero Section dengan Judul Edukatif & Live Johnstone Triplet Visualizer (Eksplorasi Skala pH) */}
+            <HeroSection onStartLearning={handleStartLearning} />
 
-        {/* 03. Tiga Kartu Modul Interaktif Sesuai PRD & AGENT.md */}
-        <TopicCards
-          userState={userState}
-          onUpdateUserState={setUserState}
-        />
+            {/* 03. Tiga Kartu Modul Interaktif Sesuai PRD, USER_FLOW.md, & DESAIN_TEKNIS.md */}
+            <TopicCards
+              userState={userState}
+              onUpdateUserState={setUserState}
+              onSelectModule={(moduleId) => handleNavigate(moduleId as Halaman)}
+            />
+          </>
+        )}
+
+        {(halaman === 'modul_1' || halaman === 'modul_2' || halaman === 'modul_3') && (
+          /* Komponen Detail Modul Sesuai USER_FLOW.md Bagian 3 */
+          <ModulDetail
+            moduleId={halaman}
+            onBackToHome={() => handleNavigate('beranda')}
+            onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
+        )}
+
+        {halaman === 'eksplorasi-ph' && (
+          <div className="eksplorasi-ph-page">
+            <div style={{ maxWidth: '980px', margin: '1.5rem auto 0', padding: '0 1.5rem' }}>
+              <button
+                type="button"
+                className="btn-back-home"
+                onClick={() => handleNavigate('beranda')}
+              >
+                ← Kembali ke Beranda
+              </button>
+            </div>
+            <HeroSection onStartLearning={() => handleNavigate('modul_1')} />
+          </div>
+        )}
       </main>
 
       {/* 04. Footer Edukasi Sains */}
@@ -61,9 +112,33 @@ function App() {
               <div className="footer-spec-group">
                 <h5>Modul Pembelajaran</h5>
                 <ul>
-                  <li>Modul 1: Teori Asam Basa (Sandbox Ikatan)</li>
-                  <li>Modul 2: Simulasi Mikroskopis pH</li>
-                  <li>Modul 3: Laboratorium Titrasi Virtual</li>
+                  <li>
+                    <button
+                      type="button"
+                      style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+                      onClick={() => handleNavigate('modul_1')}
+                    >
+                      Modul 1: Teori Asam Basa
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+                      onClick={() => handleNavigate('modul_2')}
+                    >
+                      Modul 2: Kekuatan Asam Basa &amp; pH
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+                      onClick={() => handleNavigate('modul_3')}
+                    >
+                      Modul 3: Titrasi Asam Basa
+                    </button>
+                  </li>
                 </ul>
               </div>
 
