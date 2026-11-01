@@ -1,0 +1,922 @@
+/* ==========================================================================
+   ModulDetail.css — Styling Halaman Detail Modul Pembelajaran ChemiVerse
+   Mendukung Tiga Tingkat Representasi Johnstone & Alur USER_FLOW.md
+   ========================================================================== */
+
+.modul-detail-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  color: var(--text-main, #f1f5f9);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   01. Top Navigation & Breadcrumb Header
+   -------------------------------------------------------------------------- */
+.modul-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main, #f8fafc);
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-back-home:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #38bdf8;
+  transform: translateX(-3px);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+}
+
+.modul-status-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-status-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+.btn-status-toggle.completed {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.btn-status-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   02. Hero Banner of Module
+   -------------------------------------------------------------------------- */
+.modul-hero-header {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(7, 10, 19, 0.9));
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.5);
+}
+
+.modul-hero-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.modul-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.modul-tag-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+}
+
+.fase-tag-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(217, 70, 239, 0.12);
+  border: 1px solid rgba(217, 70, 239, 0.3);
+  color: #f472b6;
+}
+
+.modul-hero-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+.modul-hero-desc {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+  max-width: 780px;
+}
+
+/* Quick Navigation / Table of Contents */
+.modul-quick-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quick-nav-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-right: 0.25rem;
+}
+
+.quick-nav-link {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.quick-nav-link:hover {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   03. Generic Section Blocks
+   -------------------------------------------------------------------------- */
+.modul-section-block {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 2rem;
+  position: relative;
+  transition: border-color 0.3s ease;
+  scroll-margin-top: 80px;
+}
+
+.modul-section-block:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.section-title-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #38bdf8;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  margin-bottom: 1.25rem;
+}
+
+.section-main-heading {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 1rem;
+}
+
+.section-next-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.btn-outline-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+  padding: 0.5rem 1.15rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-next:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Notice for Pending / TODO Content */
+.pending-content-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 12px;
+  padding: 1.1rem 1.35rem;
+  color: #fde68a;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.pending-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   04. Bagian 1: Tujuan Belajar
+   -------------------------------------------------------------------------- */
+.tujuan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.tujuan-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.9rem 1.15rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+}
+
+.tujuan-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   05. Bagian 2: Apersepsi (Masalah Pemantik)
+   -------------------------------------------------------------------------- */
+.apersepsi-content-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.apersepsi-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.apersepsi-story {
+  color: #cbd5e1;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.apersepsi-story p {
+  margin: 0 0 0.85rem;
+}
+
+.apersepsi-story p:last-child {
+  margin-bottom: 0;
+}
+
+.apersepsi-questions-group {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+}
+
+.apersepsi-subheading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
+  margin: 0 0 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.apersepsi-numbered-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.apersepsi-q-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.98rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+}
+
+.q-number {
+  color: #38bdf8;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Kotak Berwarna Kalimat Kaitan (Requirement 2) */
+.apersepsi-kaitan-box {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.1));
+  border: 1.5px solid rgba(6, 182, 212, 0.4);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 6px 20px -5px rgba(6, 182, 212, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.apersepsi-kaitan-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #06b6d4, #10b981);
+}
+
+.kaitan-box-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.kaitan-icon {
+  font-size: 1.15rem;
+}
+
+.kaitan-text {
+  font-size: 0.98rem;
+  color: #f1f5f9;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   06. Bagian 3: Sub-Materi (Konsep Inti & Tiga Tingkat Johnstone)
+   -------------------------------------------------------------------------- */
+.submateri-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.submateri-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+}
+
+.submateri-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.submateri-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #38bdf8;
+}
+
+.submateri-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* 1. Penjelasan */
+.submateri-penjelasan-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.submateri-penjelasan-text {
+  font-size: 1.02rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 2. Persamaan Reaksi */
+.submateri-reaction-box {
+  background: rgba(7, 10, 19, 0.7);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.submateri-section-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.reaction-equations-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.reaction-code-pill {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Keterbatasan Teori */
+.keterbatasan-box {
+  background: rgba(245, 158, 11, 0.07);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem 1.15rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #fde68a;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.keterbatasan-badge {
+  font-weight: 700;
+  color: #fbbf24;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+/* 3. Tiga Tingkat Representasi Johnstone */
+.johnstone-submateri-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.johnstone-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.johnstone-section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.johnstone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.johnstone-col-card {
+  background: rgba(7, 10, 19, 0.6);
+  border-radius: 12px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.johnstone-col-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Makroskopis - Emerald */
+.card-makro {
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.card-makro:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 18px -4px rgba(16, 185, 129, 0.2);
+}
+.card-makro .johnstone-card-title {
+  color: #34d399;
+}
+
+/* Submikroskopis - Magenta */
+.card-submikro {
+  border-color: rgba(217, 70, 239, 0.25);
+}
+.card-submikro:hover {
+  border-color: rgba(217, 70, 239, 0.5);
+  box-shadow: 0 4px 18px -4px rgba(217, 70, 239, 0.2);
+}
+.card-submikro .johnstone-card-title {
+  color: #f472b6;
+}
+
+/* Simbolik - Cyan */
+.card-simbolik {
+  border-color: rgba(6, 182, 212, 0.25);
+}
+.card-simbolik:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 4px 18px -4px rgba(6, 182, 212, 0.2);
+}
+.card-simbolik .johnstone-card-title {
+  color: #38bdf8;
+}
+
+.johnstone-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.johnstone-card-icon {
+  font-size: 1.1rem;
+}
+
+.johnstone-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.johnstone-card-content {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.empty-rep-note {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   07. Bagian 4: Contoh Soal
+   -------------------------------------------------------------------------- */
+.contoh-soal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contoh-soal-card {
+  background: rgba(7, 10, 19, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cs-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cs-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(217, 70, 239, 0.15);
+  border: 1px solid rgba(217, 70, 239, 0.35);
+  color: #f472b6;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+}
+
+.cs-problem {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.cs-steps-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.cs-steps-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #38bdf8;
+  text-transform: uppercase;
+  margin: 0 0 0.65rem;
+}
+
+.cs-steps-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.cs-answer-box {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.cs-answer-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #34d399;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.cs-answer-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ecfdf5;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   08. Bagian 5: Ringkasan
+   -------------------------------------------------------------------------- */
+.ringkasan-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ringkasan-points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ringkasan-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.85rem 1.15rem;
+  border-radius: 10px;
+  color: #e2e8f0;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.ringkasan-bullet {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   09. Bagian 6: Sumber Pustaka
+   -------------------------------------------------------------------------- */
+.sumber-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sumber-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.85rem 1.15rem;
+  border-radius: 10px;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.sumber-num {
+  color: #94a3b8;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. Modul Footer Navigation
+   -------------------------------------------------------------------------- */
+.modul-footer-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 1rem;
+}
+
+.modul-footer-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modul-footer-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-primary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  border: none;
+  color: #ffffff;
+  padding: 0.65rem 1.35rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+}
+
+.btn-primary-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   11. Responsiveness (Mobile & Tablet)
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .johnstone-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .modul-detail-container {
+    padding: 1.25rem 1rem 3.5rem;
+    gap: 1.75rem;
+  }
+
+  .modul-hero-header {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .modul-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .modul-section-block {
+    padding: 1.35rem 1.15rem;
+  }
+
+  .modul-footer-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modul-footer-nav-left,
+  .modul-footer-nav-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-back-home,
+  .btn-primary-action,
+  .btn-status-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+}

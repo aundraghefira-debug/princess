@@ -4,9 +4,11 @@ import { loadUserState, type ChemiVerseState } from './types';
 interface NavbarProps {
   onResetProgress?: () => void;
   activeSection?: string;
+  onNavigate?: (page: 'beranda' | 'eksplorasi-ph' | 'modul_1' | 'modul_2' | 'modul_3') => void;
+  currentPage?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onResetProgress }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, currentPage = 'beranda' }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState());
   const [scrolled, setScrolled] = useState(false);
@@ -40,6 +42,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onResetProgress }) => {
 
   const handleNavClick = (id: string) => {
     setMobileMenuOpen(false);
+    if (currentPage !== 'beranda' && onNavigate) {
+      onNavigate('beranda');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 80);
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
