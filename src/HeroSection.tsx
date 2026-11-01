@@ -88,7 +88,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartLearning }) => 
         <div className="hero-content">
           <div className="hero-badge">
             <span className="badge-pulse"></span>
-            <span>Tiga Tingkat Representasi Johnstone · Kimia SMA XI & Mahasiswa</span>
+            <span>Kimia SMA Kelas XI · Kurikulum Merdeka</span>
           </div>
 
           <h1 className="hero-title">
@@ -96,10 +96,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartLearning }) => 
           </h1>
 
           <p className="hero-description">
-            Selamat datang di <strong>ChemiVerse</strong>. Menghubungkan secara instan antara fenomena 
-            makroskopis (perubahan warna indikator), rumus simbolik pH matematika, dan 
-            visualisasi sub-mikroskopis pergerakan ion <strong>H⁺</strong>, <strong>OH⁻</strong>, serta 
-            <strong>H₃O⁺</strong> di dalam air.
+            Selamat datang di <strong>ChemiVerse</strong>. Pelajari asam basa langkah demi langkah, dari teori, perhitungan pH, sampai praktikum titrasi virtual.
           </p>
 
           <div className="hero-cta-group">
@@ -127,21 +124,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartLearning }) => 
             <div className="highlight-item">
               <span className="highlight-icon">✨</span>
               <div className="highlight-text">
-                <strong>Zero-Login</strong>
+                <div className="highlight-header">
+                  <strong>Zero-Login</strong>
+                  <span className="badge-upcoming">Segera hadir</span>
+                </div>
                 <span>Progres tersimpan di LocalStorage</span>
               </div>
             </div>
             <div className="highlight-item">
               <span className="highlight-icon">🎯</span>
               <div className="highlight-text">
-                <strong>Scaffolding</strong>
+                <div className="highlight-header">
+                  <strong>Scaffolding</strong>
+                  <span className="badge-upcoming">Segera hadir</span>
+                </div>
                 <span>Kuis adaptif dengan pohon eror</span>
               </div>
             </div>
             <div className="highlight-item">
               <span className="highlight-icon">🔬</span>
               <div className="highlight-text">
-                <strong>Presisi 0.01 mL</strong>
+                <div className="highlight-header">
+                  <strong>Presisi 0.01 mL</strong>
+                  <span className="badge-upcoming">Segera hadir</span>
+                </div>
                 <span>Kurva titrasi digital real-time</span>
               </div>
             </div>
@@ -310,7 +316,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartLearning }) => 
             </div>
 
             <div className="triplet-footer-tip">
-              💡 <em>Tips Belajar: Perubahan 1 angka pH berarti perubahan 10× lipat kepekatan ion asam atau basa (skala eksponensial).</em>
+              💡 <em>Tips Belajar: Setiap pH turun 1 angka, konsentrasi ion H⁺ menjadi 10 kali lebih besar.</em>
             </div>
           </div>
         </div>
