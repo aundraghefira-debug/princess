@@ -108,7 +108,7 @@ export interface Modul {
   judul: string;
   tersedia: boolean;           // false → kartu berlabel "Segera hadir"
   tujuan: string[];
-  apersepsi: { judul: string; cerita: string; pertanyaan: string };
+  apersepsi: { judul: string; cerita: string; pertanyaan: string[]; kaitan: string };
   subMateri: SubMateri[];
   contohSoal: ContohSoal[];
   ringkasan: string[];
