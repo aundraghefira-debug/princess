@@ -1,38 +1,85 @@
 # ATURAN KERJA PENGEMBANGAN (AGENT.md)
 
-Dokumen ini adalah instruksi mutlak bagi proses pengembangan kode web pembelajaran kimia "ChemiVerse". Aturan di bawah ini dibuat agar hasil inspeksi kode dapat diverifikasi secara biner (Ya/Tidak) sesuai standar praktikum.
+Dokumen ini adalah instruksi wajib bagi AI agent dan anggota tim yang mengembangkan web pembelajaran kimia "ChemiVerse: Asam Basa Interactive Lab". Setiap aturan ditulis agar bisa diperiksa dengan jawaban Ya/Tidak.
 
 ---
 
-## 01 Teknologi (React + Vite & Functional Component)
-*   **Arsitektur Komponen:** Wajib menggunakan *Functional Components* dengan React Hooks (`useState`, `useEffect`, `useMemo`, `useRef`). Dilarang keras menggunakan *Class Components*.
-*   **Styling:** Interface harus menggunakan file CSS yang terstruktur untuk menjamin responsivitas tata letak (layout mobile-friendly minimal lebar 360px).
+## 00 Cara Kerja Agent
 
-## 02 Penyimpanan (LocalStorage & Anonimitas Data)
-*   **Skema Data:** Data progres belajar disimpan dalam `localStorage` menggunakan key utama `_chemiverse_user_state` dalam format string JSON.
-*   **Struktur Objek JSON:** Wajib mengikuti format berikut:
+* **Baca dulu:** Sebelum mengubah kode, baca `docs/PRD.md`, `docs/TEAM.md`, `docs/USER_FLOW.md`, dan `docs/DESAIN_TEKNIS.md`.
+* **Batasi perubahan:** Ubah hanya file yang relevan dengan tugas yang diminta. Jangan merapikan, mengganti nama, atau memindahkan file lain tanpa diminta.
+* **Konfigurasi terkunci:** Jangan mengubah `package.json`, `vite.config.ts`, `tsconfig*.json`, atau `.gitignore`, dan jangan menambah library baru tanpa persetujuan tim.
+* **Tanpa Git otomatis:** Jangan membuat commit, push, merge, atau `git push --force`. Mahasiswa yang menguji dan membuat commit.
+* **Laporan wajib:** Setiap selesai bekerja, jelaskan (1) file yang berubah, (2) langkah menguji di browser, dan (3) isi kimia (rumus, angka, istilah) yang harus diperiksa manusia.
+* **Pencatatan:** Peran AI, prompt utama, dan hasil verifikasi dicatat oleh mahasiswa di `AI_LOG.md`.
+
+## 01 Teknologi (React + Vite + TypeScript)
+
+* **Komponen:** Wajib *Functional Component* dengan React Hooks (`useState`, `useEffect`, `useMemo`, `useRef`). Dilarang memakai *Class Component*.
+* **TypeScript:** Semua komponen berekstensi `.tsx`, semua data/logika berekstensi `.ts`. Hindari tipe `any`; buat `interface` atau `type` untuk data materi.
+* **Styling:** Gunakan file CSS per komponen atau `App.css`. Tata letak tidak boleh rusak atau memunculkan scroll horizontal pada lebar layar 360px hingga 1440px.
+
+## 02 Penyimpanan (LocalStorage & Privasi)
+
+* **Key:** Progres belajar disimpan di `localStorage` dengan key `_chemiverse_user_state` sebagai string JSON.
+* **Struktur objek:**
     ```json
     {
+      "version": 1,
       "completed_modules": ["modul_1", "modul_2"],
       "quiz_high_scores": { "quiz_1": 90, "quiz_2": 0 },
-      "titration_checkpoint": { "v_buret_left": 15.4 }
+      "titration_checkpoint": {
+        "titrant": "NaOH",
+        "analyte": "HCl",
+        "indicator": "fenolftalein",
+        "v_buret_used": 15.4
+      }
     }
     ```
-*   **Zero-Server Privacy:** Tidak boleh ada pengiriman data siswa ke server luar. Semua kalkulasi matematika pH (-log[H+]) wajib diproses 100% di sisi klien (*client-side*).
+* **Aman dari error:** Semua baca/tulis `localStorage` dibungkus `try/catch`. Jika data kosong, rusak, atau `version` berbeda, aplikasi kembali ke data awal tanpa crash.
+* **Tanpa server:** Tidak ada pengiriman data siswa ke server luar. Semua perhitungan kimia diproses 100% di sisi klien.
 
-## 03 Struktur (Modul & Tata Letak Folder)
-*   Semua file komponen utama untuk fitur materi asam basa wajib diletakkan langsung di dalam struktur folder **`src/`** Anda. Komponen tersebut meliputi:
-    *   `src/TheoryMatrix.tsx` (Kanvas Drag-and-Drop Teori Asam Basa)
-    *   `src/MicroMacroSimulator.tsx` (Simulator Gelas Kimia & Kaca Pembesar)
-    *   `src/TitrationLab.tsx` (Buret Digital & Simulasi Perubahan Warna)
-    *   `src/QuizScaffolding.tsx` (Sistem Soal & Logika Umpan Balik)
+## 03 Struktur Folder
 
-## 04 Bahasa (Indonesia Baku & Komunikatif)
-*   **Sistem Istilah:** Istilah kimia asing wajib diserap secara baku. Contoh: *Buffer* ditulis menjadi Larutan Penyangga, *Endpoint* ditulis menjadi Titik Akhir Titrasi.
-*   **Pesan Eror:** Alert eror harus bersifat mendidik dan membantu siswa. Dilarang memunculkan teks eror bawaan sistem. Wajib diganti dengan pesan edukatif: *"Konsentrasi larutan tidak boleh bernilai negatif. Silakan periksa kembali data Anda."*
+```
+src/
+├── data/
+│   └── chemData.ts            # Seluruh teks materi, rumus, data Ka/Kb, indikator, soal, sumber
+├── utils/
+│   └── phCalc.ts              # Fungsi perhitungan pH (murni, tanpa tampilan)
+├── components/
+│   ├── ModulDetail.tsx        # F1  Halaman modul materi
+│   ├── TheoryMatrix.tsx       # F2  Drag-and-drop teori asam basa
+│   ├── PhExplorer.tsx         # F3  Eksplorasi skala pH real-time
+│   ├── MicroMacroSimulator.tsx# F4  Gelas kimia & kaca pembesar
+│   ├── PhCalculator.tsx       # F5  Kalkulator pH bertahap
+│   ├── TitrationLab.tsx       # F6  Praktikum titrasi virtual
+│   └── QuizScaffolding.tsx    # F7  Kuis & pohon kesalahan
+├── App.tsx
+└── App.css
+```
 
-## 05 Notasi (Format Ilmiah Rumus Kimia)
-*   **Format Rumus Kimia:** Dilarang menulis rumus kimia sebagai teks biasa biasa (seperti H2SO4 atau H+). Semua representasi rumus kimia wajib menggunakan format teks ilmiah yang benar (contoh: **H₂SO₄**, **CH₃COOH**, **Ca²⁺**, **H⁺**, **OH⁻**).
-*   **Aturan Presisi Kalkulator pH:**
-    *   Tetapan eksponensial seperti Ka = 10⁻⁵ harus ditulis menggunakan notasi matematika yang rapi (10⁻⁵ atau 1 x 10⁻⁵).
-    *   Hasil akhir penghitungan pH pada simulator wajib dibatasi maksimal **2 angka di belakang koma** (menggunakan fungsi `.toFixed(2)`) untuk menyesuaikan standar ketelitian alat pH meter asli.
+* **Pisahkan konten dari tampilan:** Teks materi, rumus, nilai Ka/Kb, trayek indikator, dan soal **hanya** boleh ditulis di `src/data/chemData.ts`. Komponen hanya membaca data tersebut.
+* **File lama:** Komponen yang sudah ada di baseline tidak dipindahkan tanpa persetujuan tim. Komponen baru dibuat di `src/components/`.
+
+## 04 Kebenaran Kimia
+
+* **Dilarang mengarang data:** Agent tidak boleh membuat sendiri nilai Ka, Kb, trayek indikator, atau fakta kimia. Gunakan hanya data yang sudah ada di `chemData.ts`. Jika data belum ada, tulis `// TODO: isi dari buku sumber` dan laporkan.
+* **Kondisi standar:** Semua perhitungan mengasumsikan suhu 25 °C (Kw = 1 × 10⁻¹⁴) dan hal ini ditampilkan kepada siswa.
+* **Ruang lingkup:** Ikuti Bagian 4 PRD. Larutan penyangga dan hidrolisis garam tidak dibahas sebagai materi tersendiri.
+
+## 05 Bahasa (Indonesia Baku & Komunikatif)
+
+* **Istilah:** Istilah asing diserap secara baku. Contoh: *endpoint* → titik akhir titrasi, *equivalence point* → titik ekuivalen, *burette* → buret, *conjugate base* → basa konjugasi.
+* **Pesan error:** Dilarang memakai `alert()` atau menampilkan pesan error bawaan sistem. Tampilkan pesan di dekat kolom input yang bersifat mendidik. Contoh:
+    * "Konsentrasi larutan tidak boleh bernilai negatif. Silakan periksa kembali data Anda."
+    * "Nilai Ka diperlukan untuk menghitung pH asam lemah."
+* **Sapaan:** Gunakan "kamu" secara konsisten untuk menyapa siswa.
+
+## 06 Notasi Ilmiah
+
+* **Rumus kimia:** Dilarang menulis rumus kimia sebagai teks datar (H2SO4, H+). Di tampilan siswa wajib memakai format ilmiah: **H₂SO₄**, **CH₃COOH**, **Ca²⁺**, **H⁺**, **OH⁻**.
+* **Kode tetap ASCII:** Nama variabel, fungsi, dan key data tetap memakai huruf biasa (contoh: `ka`, `h_plus`). Format ilmiah hanya untuk teks yang dilihat siswa.
+* **Eksponen:** Tulis dengan tanda kali dan pangkat: 1 × 10⁻⁵, bukan 1 x 10^-5 atau 1e-5.
+* **Presisi pH:** Hasil akhir pH/pOH ditampilkan dengan **2 angka di belakang koma**. Pembulatan hanya dilakukan saat menampilkan, bukan pada perhitungan antara.
+* **Format angka:** Tampilan memakai koma desimal sesuai kaidah Indonesia (contoh: pH 4,74; 0,01 mL), menggunakan `toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })`.
