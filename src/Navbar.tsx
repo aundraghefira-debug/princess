@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { loadUserState, type ChemiVerseState } from './types';
 
 interface NavbarProps {
   onResetProgress?: () => void;
@@ -10,7 +9,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, currentPage = 'beranda' }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userState, setUserState] = useState<ChemiVerseState>(loadUserState());
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -18,27 +16,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, cur
       setScrolled(window.scrollY > 20);
     };
 
-    const handleStorageChange = () => {
-      setUserState(loadUserState());
-    };
-
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('storage', handleStorageChange);
-
-    // Interval sync for local state updates
-    const interval = setInterval(() => {
-      setUserState(loadUserState());
-    }, 1500);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
     };
   }, []);
-
-  const completedCount = userState.completed_modules.length;
-  const progressPercent = Math.min(100, Math.round((completedCount / 3) * 100));
 
   const handleNavClick = (id: string) => {
     setMobileMenuOpen(false);
@@ -103,21 +85,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, cur
           </button>
         </nav>
 
-        {/* Progress Tracker (Zero-Login LocalStorage) */}
+        {/* Progress Tracker (F8: disembunyikan sampai fitur selesai) */}
         <div className="navbar-progress-section">
-          <div className="progress-badge" title="Status progres belajar tersimpan aman secara lokal di peramban Anda">
-            <div className="progress-info">
-              <span className="progress-label">Progres Belajar:</span>
-              <span className="progress-value">{completedCount}/3 Modul</span>
-            </div>
-            <div className="progress-bar-track">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${progressPercent}%` }}
-              ></div>
-            </div>
-          </div>
-
           {/* Mobile Menu Button */}
           <button
             type="button"
