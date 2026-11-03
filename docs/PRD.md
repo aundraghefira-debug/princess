@@ -116,6 +116,18 @@ Alur mengikuti praktikum nyata:
 - Saat jawaban salah, sistem tidak langsung memberi kunci, tetapi bertanya untuk menemukan letak kesalahan (salah memilih rumus / salah operasi logaritma / salah satuan).
 - Petunjuk mengarah kembali ke fitur terkait (misalnya membuka F4 atau F5).
 - Minimal 5 soal per modul, masing-masing dengan kunci dan pembahasan.
+**Dua mode kuis:**
+
+| | Mode Evaluasi (`kind: "diagnostic"`) | Mode Belajar (`kind: "practice"`) |
+|---|---|---|
+| Akses materi | Navigasi ke materi disembunyikan selama mengerjakan | Bebas |
+| Kirim jawaban | Hanya jika semua soal sudah diisi | Per soal |
+| Umpan balik | Skor dan pembahasan muncul setelah semua jawaban dikirim dan dibekukan | Langsung per soal |
+| Jika salah | Pembahasan ditampilkan setelah kirim | Pembahasan + tombol menuju sub-materi terkait |
+| Mengulang | Percobaan baru dengan ID baru; jawaban lama tetap di riwayat | Bebas diulang |
+| Keluar di tengah | Tombol "Keluar" dengan konfirmasi; draf jawaban tetap tersimpan | — |
+
+Urutan pengerjaan: Mode Evaluasi + penyimpanan lokal dulu (Pertemuan 03), Mode Belajar menyusul.
 
 ### F8. Penyimpanan Progres Lokal (tanpa login)
 **Mendukung semua fitur**
