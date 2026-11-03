@@ -71,7 +71,7 @@ export interface Indikator {
   warnaBasa: string;     // kode hex
 }
 
-// Kompatibilitas global & helper render sumber
+// Kompatibilitas global
 declare global {
   interface Array<T> {
     trim(): string;
@@ -88,27 +88,6 @@ if (typeof (Array.prototype as unknown as { trim?: () => string }).trim !== 'fun
     writable: true,
   });
 }
-
-// Helper pembuat entri sumber dengan kompatibilitas render langsung di JSX
-const buatSumber = (
-  penulis: string,
-  tahun: string,
-  judul: string,
-  penerbit: string,
-  halaman?: string
-): Sumber => ({
-  penulis,
-  tahun,
-  judul,
-  penerbit,
-  ...(halaman ? { halaman } : {}),
-  *[Symbol.iterator]() {
-    yield `${penulis}, ${tahun}. ${judul}. ${penerbit}.${halaman ? ` ${halaman}.` : ''}`;
-  },
-  toString() {
-    return `${penulis}, ${tahun}. ${judul}. ${penerbit}.${halaman ? ` ${halaman}.` : ''}`;
-  },
-});
 
 // ---------- DAFTAR MODUL ----------
 
@@ -288,20 +267,20 @@ export const daftarModul: Modul[] = [
       'Satu zat dapat dipandang berbeda oleh tiap teori, misalnya NH₃ bukan basa Arrhenius, tetapi merupakan basa Brønsted-Lowry (akseptor H⁺) sekaligus basa Lewis (donor pasangan elektron).',
     ],
     sumber: [
-      buatSumber(
-        'McMurry, J., Fay, R. C., & Robinson, J. K.',
-        '2016',
-        'Chemistry (7th ed., Global ed.)',
-        'Pearson Education',
-        'Hlm. 603–640'
-      ),
-      buatSumber(
-        'Chang, R., & Goldsby, K.',
-        '2016',
-        'Chemistry (12th ed.)',
-        'McGraw-Hill Education',
-        'Hlm. 666–704'
-      ),
+      {
+        penulis: 'McMurry, J., Fay, R. C., & Robinson, J. K.',
+        tahun: '2016',
+        judul: 'Chemistry (7th ed., Global ed.)',
+        penerbit: 'Pearson Education',
+        halaman: 'Hlm. 603–640',
+      },
+      {
+        penulis: 'Chang, R., & Goldsby, K.',
+        tahun: '2016',
+        judul: 'Chemistry (12th ed.)',
+        penerbit: 'McGraw-Hill Education',
+        halaman: 'Hlm. 666–704',
+      },
     ],
   },
 
@@ -483,20 +462,20 @@ export const daftarModul: Modul[] = [
       'Perhitungan [H⁺] atau [OH⁻]: asam kuat [H⁺] = a × Ma, basa kuat [OH⁻] = b × Mb, asam lemah [H⁺] = √(Ka × Ma), dan basa lemah [OH⁻] = √(Kb × Mb). Setiap perubahan 1 satuan pH berarti konsentrasi H⁺ berubah 10 kali.',
     ],
     sumber: [
-      buatSumber(
-        'McMurry, J., Fay, R. C., & Robinson, J. K.',
-        '2016',
-        'Chemistry (7th ed., Global ed.)',
-        'Pearson Education',
-        'Hlm. 616–634'
-      ),
-      buatSumber(
-        'Chang, R., & Goldsby, K.',
-        '2016',
-        'Chemistry (12th ed.)',
-        'McGraw-Hill Education',
-        'Hlm. 670–687'
-      ),
+      {
+        penulis: 'McMurry, J., Fay, R. C., & Robinson, J. K.',
+        tahun: '2016',
+        judul: 'Chemistry (7th ed., Global ed.)',
+        penerbit: 'Pearson Education',
+        halaman: 'Hlm. 616–634',
+      },
+      {
+        penulis: 'Chang, R., & Goldsby, K.',
+        tahun: '2016',
+        judul: 'Chemistry (12th ed.)',
+        penerbit: 'McGraw-Hill Education',
+        halaman: 'Hlm. 670–687',
+      },
     ],
   },
 
@@ -698,45 +677,45 @@ export const daftarModul: Modul[] = [
       'Indikator dipilih agar trayek pH-nya mengandung pH titik ekuivalen. Fenolftalein cocok untuk kedua jenis titrasi tersebut, sedangkan metil merah tidak cocok untuk titrasi asam lemah–basa kuat.',
     ],
     sumber: [
-      buatSumber(
-        'Kusumaningrum, W. I.',
-        '2020',
-        'Modul Pembelajaran SMA Kimia Kelas XI KD 3.13: Titrasi Asam Basa',
-        'Direktorat SMA, Kemendikbud',
-        'Hlm. 7–12 dan 23–24'
-      ),
-      buatSumber(
-        'Kalsum, S., Devi, P. K., Masmiami, & Syahrul, H.',
-        '2009',
-        'Kimia 2: untuk SMA dan MA Kelas XI',
-        'Pusat Perbukuan Depdiknas',
-        'Hlm. 179, 187–198'
-      ),
-      buatSumber(
-        'Chang, R., & Goldsby, K.',
-        '2016',
-        'Chemistry (12th ed.)',
-        'McGraw-Hill Education',
-        'Bab 16, hlm. 730–741'
-      ),
-      buatSumber(
-        'Alviar-Agnew, M., & Agnew, H.',
-        't.t.',
-        '13.6: Acid–Base Titration',
-        'Chemistry LibreTexts'
-      ),
-      buatSumber(
-        'Tempo',
-        '2025',
-        '“Sungai di Zambia Mati Setelah Dam Tailing Tambang Milik Perusahaan Cina Jebol”',
-        'Tempo'
-      ),
-      buatSumber(
-        'Kille, R., & Zimba, J.',
-        '2025',
-        '“A river ‘died’ overnight in Zambia after an acidic waste spill at a Chinese-owned mine”',
-        'Associated Press'
-      ),
+      {
+        penulis: 'Kusumaningrum, W. I.',
+        tahun: '2020',
+        judul: 'Modul Pembelajaran SMA Kimia Kelas XI KD 3.13: Titrasi Asam Basa',
+        penerbit: 'Direktorat SMA, Kemendikbud',
+        halaman: 'Hlm. 7–12 dan 23–24',
+      },
+      {
+        penulis: 'Kalsum, S., Devi, P. K., Masmiami, & Syahrul, H.',
+        tahun: '2009',
+        judul: 'Kimia 2: untuk SMA dan MA Kelas XI',
+        penerbit: 'Pusat Perbukuan Depdiknas',
+        halaman: 'Hlm. 179, 187–198',
+      },
+      {
+        penulis: 'Chang, R., & Goldsby, K.',
+        tahun: '2016',
+        judul: 'Chemistry (12th ed.)',
+        penerbit: 'McGraw-Hill Education',
+        halaman: 'Bab 16, hlm. 730–741',
+      },
+      {
+        penulis: 'Alviar-Agnew, M., & Agnew, H.',
+        tahun: 't.t.',
+        judul: '13.6: Acid–Base Titration',
+        penerbit: 'Chemistry LibreTexts',
+      },
+      {
+        penulis: 'Tempo',
+        tahun: '2025',
+        judul: '“Sungai di Zambia Mati Setelah Dam Tailing Tambang Milik Perusahaan Cina Jebol”',
+        penerbit: 'Tempo',
+      },
+      {
+        penulis: 'Kille, R., & Zimba, J.',
+        tahun: '2025',
+        judul: '“A river ‘died’ overnight in Zambia after an acidic waste spill at a Chinese-owned mine”',
+        penerbit: 'Associated Press',
+      },
     ],
   },
 ];
