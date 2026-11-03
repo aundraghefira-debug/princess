@@ -762,3 +762,320 @@ export type ZatSimulator = {
 };
 
 export const zatSimulator: ZatSimulator[] = [];
+
+
+// ---------- KUIS (Pertemuan 03, kontrak docs/DATABASE.md) ----------
+
+export interface OpsiSoal {
+  id: 'A' | 'B' | 'C' | 'D';
+  teks: string;
+}
+
+export interface SoalKuis {
+  id: string;
+  konsep: string;
+  subMateriId: string;
+  pertanyaan: string;
+  opsi: OpsiSoal[];
+  jawabanBenar: 'A' | 'B' | 'C' | 'D';
+  pembahasan: string;
+  miskonsepsi?: string;
+}
+
+export interface Kuis {
+  activityId: string;
+  questionVersion: string;
+  soal: SoalKuis[];
+}
+
+export const kuisPerModul: Record<Modul['id'], Kuis> = {
+  modul_1: {
+    activityId: 'kuis-teori',
+    questionVersion: 'v1',
+    soal: [
+      {
+        id: 'm1-q1',
+        konsep: 'definisi-arrhenius',
+        subMateriId: 'm1-arrhenius',
+        pertanyaan:
+          'Menurut teori Arrhenius, pernyataan yang tepat untuk menjelaskan sifat asam HNO₃ ketika dilarutkan dalam air adalah ....',
+        opsi: [
+          { id: 'A', teks: 'HNO₃ meningkatkan konsentrasi ion H⁺ dalam larutan.' },
+          { id: 'B', teks: 'HNO₃ meningkatkan konsentrasi ion OH⁻ dalam larutan.' },
+          { id: 'C', teks: 'HNO₃ menerima pasangan elektron dari air.' },
+          { id: 'D', teks: 'HNO₃ menerima proton dari air.' },
+        ],
+        jawabanBenar: 'A',
+        pembahasan:
+          'Asam Arrhenius adalah zat yang meningkatkan konsentrasi ion H⁺ (atau H₃O⁺) dalam air. HNO₃ terionisasi menghasilkan H⁺ dan NO₃⁻.',
+        miskonsepsi:
+          'Opsi B: Tertukar antara sifat asam dan basa Arrhenius; peningkatan OH⁻ merupakan ciri basa. Opsi C: Mencampuradukkan definisi asam Arrhenius dengan konsep asam Lewis. Opsi D: Mencampuradukkan definisi asam dengan basa Brønsted-Lowry; penerima proton adalah basa.',
+      },
+      {
+        id: 'm1-q2',
+        konsep: 'bronsted-lowry',
+        subMateriId: 'm1-bronsted-lowry',
+        pertanyaan:
+          'Perhatikan reaksi: H₂PO₄⁻ + H₂O ⇌ HPO₄²⁻ + H₃O⁺. Spesi yang bertindak sebagai asam Brønsted-Lowry adalah ....',
+        opsi: [
+          { id: 'A', teks: 'H₂O, karena menerima proton.' },
+          { id: 'B', teks: 'H₂PO₄⁻, karena mendonorkan proton.' },
+          { id: 'C', teks: 'HPO₄²⁻, karena mendonorkan proton.' },
+          { id: 'D', teks: 'H₃O⁺, karena menerima proton.' },
+        ],
+        jawabanBenar: 'B',
+        pembahasan:
+          'Asam Brønsted-Lowry adalah donor proton. H₂PO₄⁻ melepaskan satu H⁺ kepada H₂O sehingga terbentuk HPO₄²⁻ dan H₃O⁺.',
+        miskonsepsi:
+          'Opsi A: Membalik peran air pada reaksi; air menerima proton sehingga bertindak sebagai basa. Opsi C: Memilih produk hasil pelepasan proton, bukan spesi asam pada reaksi maju. Opsi D: Keliru mengidentifikasi arah perpindahan proton; H₃O⁺ terbentuk setelah air menerima proton.',
+      },
+      {
+        id: 'm1-q3',
+        konsep: 'asam-basa-lewis',
+        subMateriId: 'm1-lewis',
+        pertanyaan:
+          'Dalam reaksi AlCl₃ + Cl⁻ → AlCl₄⁻, AlCl₃ bertindak sebagai asam Lewis karena ....',
+        opsi: [
+          { id: 'A', teks: 'Mendonorkan proton kepada Cl⁻.' },
+          { id: 'B', teks: 'Menerima pasangan elektron dari Cl⁻.' },
+          { id: 'C', teks: 'Mendonorkan pasangan elektron kepada Cl⁻.' },
+          { id: 'D', teks: 'Menghasilkan ion OH⁻ dalam air.' },
+        ],
+        jawabanBenar: 'B',
+        pembahasan:
+          'Asam Lewis adalah penerima pasangan elektron. Atom Al pada AlCl₃ kekurangan elektron dan menerima pasangan elektron dari ion Cl⁻.',
+        miskonsepsi:
+          'Opsi A: Menggunakan definisi asam Brønsted-Lowry, bukan Lewis. Opsi C: Membalik definisi asam dan basa Lewis; donor pasangan elektron adalah basa Lewis. Opsi D: Menganggap definisi Lewis harus melibatkan pembentukan OH⁻ seperti konsep Arrhenius.',
+      },
+      {
+        id: 'm1-q4',
+        konsep: 'pasangan-asam-basa-konjugasi',
+        subMateriId: 'm1-bronsted-lowry',
+        pertanyaan:
+          'Pada reaksi NH₃ + H₂O ⇌ NH₄⁺ + OH⁻, pasangan basa dan asam konjugasi yang benar adalah ....',
+        opsi: [
+          { id: 'A', teks: 'NH₃/NH₄⁺.' },
+          { id: 'B', teks: 'H₂O/NH₄⁺.' },
+          { id: 'C', teks: 'NH₃/OH⁻.' },
+          { id: 'D', teks: 'H₂O/NH₃.' },
+        ],
+        jawabanBenar: 'A',
+        pembahasan:
+          'NH₃ menerima proton dari H₂O dan berubah menjadi NH₄⁺. Karena berbeda satu proton, NH₃ adalah basa dan NH₄⁺ adalah asam konjugasinya.',
+        miskonsepsi:
+          'Opsi B: Memasangkan spesi yang bukan pasangan konjugasi karena tidak berbeda hanya satu proton. Opsi C: Menganggap OH⁻ sebagai asam konjugasi NH₃, padahal OH⁻ terbentuk dari H₂O yang melepas proton. Opsi D: Tidak memperhatikan bahwa pasangan konjugasi harus berasal dari satu spesi yang menerima atau melepas H⁺.',
+      },
+      {
+        id: 'm1-q5',
+        konsep: 'spesi-amfiprotik',
+        subMateriId: 'm1-bronsted-lowry',
+        pertanyaan:
+          'Pernyataan yang benar mengenai ion HCO₃⁻ adalah ....',
+        opsi: [
+          { id: 'A', teks: 'HCO₃⁻ hanya dapat bertindak sebagai asam.' },
+          { id: 'B', teks: 'HCO₃⁻ hanya dapat bertindak sebagai basa.' },
+          { id: 'C', teks: 'HCO₃⁻ dapat mendonorkan maupun menerima proton.' },
+          { id: 'D', teks: 'HCO₃⁻ tidak dapat bereaksi dengan asam atau basa.' },
+        ],
+        jawabanBenar: 'C',
+        pembahasan:
+          'HCO₃⁻ bersifat amfiprotik. Ion ini dapat mendonorkan H⁺ menjadi CO₃²⁻ atau menerima H⁺ menjadi H₂CO₃.',
+        miskonsepsi:
+          'Opsi A: Hanya mengenali kemampuan HCO₃⁻ mendonorkan proton dan mengabaikan kemampuannya menerima proton. Opsi B: Hanya mengenali kemampuan HCO₃⁻ menerima proton dan mengabaikan kemampuannya mendonorkan proton. Opsi D: Belum memahami bahwa spesi amfiprotik dapat berperan sebagai asam maupun basa.',
+      },
+    ],
+  },
+  modul_2: {
+    activityId: 'kuis-ph',
+    questionVersion: 'v1',
+    soal: [
+      {
+        id: 'm2-q1',
+        konsep: 'ph-basa-kuat',
+        subMateriId: 'm2-penentuan-ph',
+        pertanyaan:
+          'Larutan Ba(OH)₂ memiliki konsentrasi 0,0025 M dan terionisasi sempurna. Berapakah pH larutan tersebut pada 25 °C?',
+        opsi: [
+          { id: 'A', teks: '2,30' },
+          { id: 'B', teks: '11,70' },
+          { id: 'C', teks: '11,40' },
+          { id: 'D', teks: '2,60' },
+        ],
+        jawabanBenar: 'B',
+        pembahasan:
+          'Ba(OH)₂ → Ba²⁺ + 2OH⁻, sehingga [OH⁻] = 2 × 0,0025 = 0,0050 M. pOH = −log(0,0050) ≈ 2,30; pH = 14 − 2,30 = 11,70.',
+        miskonsepsi:
+          'Opsi A: Melaporkan nilai pOH (2,30) sebagai pH, atau lupa hubungan pH + pOH = 14. Opsi C: Tidak memperhitungkan dua ion OH⁻ tiap satu formula Ba(OH)₂, sehingga [OH⁻] = 0,0025 M, pOH = 2,60, dan pH = 11,40. Opsi D: Tidak memperhitungkan dua ion OH⁻ dan sekaligus melaporkan pOH (2,60) sebagai pH.',
+      },
+      {
+        id: 'm2-q2',
+        konsep: 'ph-asam-kuat',
+        subMateriId: 'm2-penentuan-ph',
+        pertanyaan:
+          'Larutan HCl 2,5 × 10⁻³ M dianggap terionisasi sempurna. Nilai pH larutan tersebut adalah ....',
+        opsi: [
+          { id: 'A', teks: '2,60' },
+          { id: 'B', teks: '3,40' },
+          { id: 'C', teks: '11,40' },
+          { id: 'D', teks: '1,60' },
+        ],
+        jawabanBenar: 'A',
+        pembahasan:
+          'HCl merupakan asam kuat sehingga [H⁺] ≈ 2,5 × 10⁻³ M. pH = −log(2,5 × 10⁻³) ≈ 2,60.',
+        miskonsepsi:
+          'Opsi B: Menambahkan log 2,5 (0,40) ke pangkat 3, padahal seharusnya dikurangkan (3 − 0,40). Opsi C: Melaporkan pOH (14 − 2,60 = 11,40) sebagai pH, atau membalik sifat asam dan basa. Opsi D: Kesalahan memanipulasi pangkat sepuluh dan nilai log 2,5 (mis. 2 − 0,40).',
+      },
+      {
+        id: 'm2-q3',
+        konsep: 'ph-asam-lemah',
+        subMateriId: 'm2-kekuatan-asam-basa',
+        pertanyaan:
+          'Asam benzoat (HBz) 0,20 M memiliki Ka = 6,3 × 10⁻⁵. Dengan pendekatan x kecil, perkiraan pH larutan adalah ....',
+        opsi: [
+          { id: 'A', teks: '1,45' },
+          { id: 'B', teks: '2,45' },
+          { id: 'C', teks: '3,45' },
+          { id: 'D', teks: '4,45' },
+        ],
+        jawabanBenar: 'B',
+        pembahasan:
+          'Untuk asam lemah monoprotik, [H⁺] ≈ √(Ka × C) = √(6,3 × 10⁻⁵ × 0,20) ≈ 3,55 × 10⁻³ M. Maka pH ≈ −log(3,55 × 10⁻³) = 2,45.',
+        miskonsepsi:
+          'Opsi A: Kesalahan pangkat sepuluh pada [H⁺] (hasil 3,55 × 10⁻²) sehingga larutan terkesan jauh lebih asam. Opsi C: Kesalahan pangkat sepuluh pada [H⁺] (hasil 3,55 × 10⁻⁴) atau salah menghitung akar kuadrat. Opsi D: [H⁺] terlalu kecil dua orde; kemungkinan menganggap asam lemah hampir tidak terionisasi.',
+      },
+      {
+        id: 'm2-q4',
+        konsep: 'ph-basa-lemah',
+        subMateriId: 'm2-kekuatan-asam-basa',
+        pertanyaan:
+          'Larutan piridina (C₅H₅N) 0,050 M memiliki Kb = 1,7 × 10⁻⁹. Dengan pendekatan x kecil, perkiraan pH larutan pada 25 °C adalah ....',
+        opsi: [
+          { id: 'A', teks: '5,04' },
+          { id: 'B', teks: '7,00' },
+          { id: 'C', teks: '8,96' },
+          { id: 'D', teks: '12,70' },
+        ],
+        jawabanBenar: 'C',
+        pembahasan:
+          '[OH⁻] ≈ √(Kb × C) = √(1,7 × 10⁻⁹ × 0,050) ≈ 9,22 × 10⁻⁶ M. pOH ≈ 5,04 sehingga pH = 14 − 5,04 ≈ 8,96.',
+        miskonsepsi:
+          'Opsi A: Menghitung pOH tetapi melaporkannya sebagai pH. Opsi B: Menganggap semua larutan memiliki pH netral tanpa mempertimbangkan sifat basa lemah. Opsi D: Menganggap basa lemah terionisasi sempurna sehingga [OH⁻] = 0,050 M, pOH = 1,30, dan pH = 12,70.',
+      },
+      {
+        id: 'm2-q5',
+        konsep: 'hubungan-ph-konsentrasi-h',
+        subMateriId: 'm2-penentuan-ph',
+        pertanyaan:
+          'Jika pH suatu larutan turun dari 5 menjadi 4 pada suhu yang sama, bagaimana perubahan konsentrasi ion H⁺?',
+        opsi: [
+          { id: 'A', teks: 'Menjadi 2 kali lebih besar.' },
+          { id: 'B', teks: 'Menjadi 5 kali lebih besar.' },
+          { id: 'C', teks: 'Menjadi 10 kali lebih besar.' },
+          { id: 'D', teks: 'Menjadi 100 kali lebih kecil.' },
+        ],
+        jawabanBenar: 'C',
+        pembahasan:
+          'pH = −log[H⁺]. Penurunan pH satu satuan berarti konsentrasi H⁺ meningkat sepuluh kali lipat.',
+        miskonsepsi:
+          'Opsi A: Menganggap skala pH bersifat linear, bukan logaritmik. Opsi B: Tidak memahami bahwa perubahan satu satuan pH setara faktor sepuluh. Opsi D: Membalik arah perubahan (konsentrasi H⁺ justru naik saat pH turun) dan keliru menentukan faktor perubahannya.',
+      },
+    ],
+  },
+  modul_3: {
+    activityId: 'kuis-titrasi',
+    questionVersion: 'v1',
+    soal: [
+      {
+        id: 'm3-q1',
+        konsep: 'perhitungan-konsentrasi-titrasi',
+        subMateriId: 'm3-hitung-konsentrasi',
+        pertanyaan:
+          'Sebanyak 18,0 mL larutan HNO₃ dititrasi dengan KOH 0,150 M. Titik ekuivalen tercapai setelah penambahan 15,0 mL KOH. Konsentrasi HNO₃ adalah ....',
+        opsi: [
+          { id: 'A', teks: '0,068 M' },
+          { id: 'B', teks: '0,125 M' },
+          { id: 'C', teks: '0,150 M' },
+          { id: 'D', teks: '0,180 M' },
+        ],
+        jawabanBenar: 'B',
+        pembahasan:
+          'Reaksi HNO₃ + KOH → KNO₃ + H₂O memiliki perbandingan mol 1 : 1. Va × Ma = Vb × Mb, sehingga M HNO₃ = (0,150 × 15,0) ÷ 18,0 = 0,125 M.',
+        miskonsepsi:
+          'Opsi A: Membagi dengan volume total campuran (18,0 + 15,0 = 33,0 mL), bukan dengan volume analit awal. Opsi C: Menyalin konsentrasi titran sebagai konsentrasi analit tanpa perhitungan. Opsi D: Membalik rasio volume: 0,150 × 18,0 ÷ 15,0 = 0,180 M.',
+      },
+      {
+        id: 'm3-q2',
+        konsep: 'stoikiometri-titrasi-asam-poliprotik',
+        subMateriId: 'm3-hitung-konsentrasi',
+        pertanyaan:
+          'Sebanyak 12,0 mL H₃PO₄ 0,080 M dititrasi dengan NaOH 0,120 M hingga seluruh proton H₃PO₄ ternetralkan (terbentuk Na₃PO₄). Volume NaOH yang diperlukan adalah ....',
+        opsi: [
+          { id: 'A', teks: '8,0 mL' },
+          { id: 'B', teks: '16,0 mL' },
+          { id: 'C', teks: '24,0 mL' },
+          { id: 'D', teks: '32,0 mL' },
+        ],
+        jawabanBenar: 'C',
+        pembahasan:
+          'Reaksi H₃PO₄ + 3NaOH → Na₃PO₄ + 3H₂O membutuhkan 3 mol OH⁻ per 1 mol H₃PO₄. Mol H₃PO₄ = 0,080 × 0,0120 = 9,6 × 10⁻⁴ mol. Mol NaOH = 3 × 9,6 × 10⁻⁴ = 2,88 × 10⁻³ mol. V NaOH = n ÷ M = 0,00288 ÷ 0,120 = 0,0240 L = 24,0 mL.',
+        miskonsepsi:
+          'Opsi A: Mengabaikan faktor tiga proton yang dinetralkan pada H₃PO₄ (memakai faktor 1). Opsi B: Menggunakan faktor stoikiometri dua, bukan tiga. Opsi D: Menggunakan faktor stoikiometri empat atau salah menghitung mol titran.',
+      },
+      {
+        id: 'm3-q3',
+        konsep: 'ph-titik-ekuivalen',
+        subMateriId: 'm3-kurva-titrasi',
+        pertanyaan:
+          'Pada titrasi 25 mL CH₃COOH 0,1 M dengan NaOH 0,1 M, titik ekuivalen tercapai pada 25 mL dengan pH sekitar 8,7. Pernyataan yang tepat mengenai pH di titik ekuivalen adalah ....',
+        opsi: [
+          { id: 'A', teks: 'pH di atas 7 karena larutan berisi ion CH₃COO⁻ yang bereaksi dengan air menghasilkan sedikit OH⁻.' },
+          { id: 'B', teks: 'pH seharusnya 7 karena jumlah mol asam sama dengan jumlah mol basa.' },
+          { id: 'C', teks: 'pH di atas 7 karena NaOH yang ditambahkan sudah berlebih.' },
+          { id: 'D', teks: 'pH di bawah 7 karena asam asetat adalah asam lemah.' },
+        ],
+        jawabanBenar: 'A',
+        pembahasan:
+          'Di titik ekuivalen, seluruh CH₃COOH sudah bereaksi menjadi CH₃COO⁻ dan Na⁺. Ion CH₃COO⁻ sedikit bereaksi dengan air dan menghasilkan OH⁻, sehingga pH di titik ekuivalen berada di atas 7.',
+        miskonsepsi:
+          'Opsi B: Menyamakan titik ekuivalen dengan kondisi netral (pH 7). Opsi C: Menyamakan titik ekuivalen dengan kondisi setelah titik ekuivalen, saat NaOH berlebih. Opsi D: Mengira masih ada asam asetat tersisa di titik ekuivalen.',
+      },
+      {
+        id: 'm3-q4',
+        konsep: 'pemilihan-indikator',
+        subMateriId: 'm3-pemilihan-indikator',
+        pertanyaan:
+          'Pada titrasi CH₃COOH dengan NaOH, pH titik ekuivalen sekitar 8,7. Indikator yang paling tepat digunakan adalah ....',
+        opsi: [
+          { id: 'A', teks: 'Metil jingga (trayek pH 3,1–4,4)' },
+          { id: 'B', teks: 'Metil merah (trayek pH 4,4–6,2)' },
+          { id: 'C', teks: 'Bromtimol biru (trayek pH 6,0–7,6)' },
+          { id: 'D', teks: 'Fenolftalein (trayek pH 8,3–10,0)' },
+        ],
+        jawabanBenar: 'D',
+        pembahasan:
+          'Indikator dipilih agar trayek pH-nya mengandung pH titik ekuivalen. Trayek fenolftalein (8,3–10,0) mengandung pH 8,7, sehingga perubahan warnanya terjadi tepat di sekitar titik ekuivalen.',
+        miskonsepsi:
+          'Opsi A: Memilih indikator yang trayeknya jauh di bawah pH titik ekuivalen, sehingga warna berubah terlalu awal. Opsi B: Sama dengan A; metil merah cocok untuk titrasi yang pH titik ekuivalennya di bawah 7. Opsi C: Menganggap pH titik ekuivalen selalu 7 (netral).',
+      },
+      {
+        id: 'm3-q5',
+        konsep: 'pembacaan-buret',
+        subMateriId: 'm3-prinsip-prosedur',
+        pertanyaan:
+          'Pembacaan buret sebelum titrasi adalah 0,35 mL dan setelah titrasi adalah 22,80 mL. Volume titran yang digunakan adalah ....',
+        opsi: [
+          { id: 'A', teks: '22,80 mL' },
+          { id: 'B', teks: '23,15 mL' },
+          { id: 'C', teks: '22,45 mL' },
+          { id: 'D', teks: '0,35 mL' },
+        ],
+        jawabanBenar: 'C',
+        pembahasan:
+          'Volume titran yang keluar dari buret adalah pembacaan akhir dikurangi pembacaan awal: 22,80 − 0,35 = 22,45 mL.',
+        miskonsepsi:
+          'Opsi A: Menggunakan pembacaan akhir saja dan mengabaikan volume awal buret. Opsi B: Menjumlahkan pembacaan awal dan akhir, bukan mencari selisihnya. Opsi D: Menggunakan pembacaan awal sebagai volume titran yang terpakai.',
+      },
+    ],
+  },
+};
+
