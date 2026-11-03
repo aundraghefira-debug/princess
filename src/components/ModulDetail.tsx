@@ -1,6 +1,7 @@
-import React from 'react';
-import { modules, type Modul, type SubMateri } from '../data/chemData';
+import React, { useState } from 'react';
+import { modules, kuisPerModul, type Modul, type SubMateri } from '../data/chemData';
 import { type ChemiVerseState } from '../types';
+import QuizSection from './QuizSection';
 import './ModulDetail.css';
 
 export interface ModulDetailProps {
@@ -67,7 +68,14 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
     }
   };
 
-  if (!modul) {
+  // State: apakah siswa sedang mengerjakan kuis (untuk menyembunyikan navigasi materi)
+  const [isQuizActive, setIsQuizActive] = useState<boolean>(false);
+
+  // Cek apakah modul ini punya soal di kuisPerModul
+  const normalizedForKuis = moduleId.replace('-', '_') as keyof typeof kuisPerModul;
+  const hasKuis = Boolean(kuisPerModul[normalizedForKuis]?.soal?.length);
+
+    if (!modul) {
     return (
       <div className="modul-detail-container">
         <div className="modul-top-bar">
@@ -179,7 +187,10 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
 
   return (
     <div className="modul-detail-container">
-      {/* 01. Navigasi Atas & Status Progres Belajar */}
+      {/* Sembunyikan navigasi dan materi saat Mode Evaluasi aktif (F7: PRD.md) */}
+      {!isQuizActive && (
+      <>
+            {/* 01. Navigasi Atas & Status Progres Belajar */}
       <div className="modul-top-bar">
         <button
           type="button"
@@ -236,6 +247,11 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <button type="button" className="quick-nav-link" onClick={() => scrollToSection('sumber-pustaka')}>
             6. Sumber
           </button>
+          {hasKuis && (
+            <button type="button" className="quick-nav-link" onClick={() => scrollToSection('kuis-evaluasi')}>
+              7. Kuis
+            </button>
+          )}
         </nav>
       </header>
 
@@ -361,8 +377,8 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <div className="submateri-list-wrapper">
             {modul.subMateri.map((sub, sIdx) => {
               const equations = getPersamaanReaksi(sub);
-              const repMakro = sub.representasi?.makro || (sub.representasi as unknown as { makroskopis?: string })?.makroskopis;
-              const repSubmikro = sub.representasi?.submikro || (sub.representasi as unknown as { submikroskopis?: string })?.submikroskopis;
+                 const repMakro = sub.representasi?.makroskopis;
+   const repSubmikro = sub.representasi?.submikroskopis;
               const repSimbolik = sub.representasi?.simbolik;
 
               return (
@@ -604,7 +620,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
             {modul.sumber.map((smb, smbIdx) => (
               <li key={smbIdx} className="sumber-item">
                 <span className="sumber-num">[{smbIdx + 1}]</span>
-                <span>{smb}</span>
+                   <span>{smb.penulis} ({smb.tahun}). <em>{smb.judul}</em>. {smb.penerbit}{smb.halaman ? `, ${smb.halaman}` : ''}.</span>
               </li>
             ))}
           </ul>
@@ -615,10 +631,36 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           </div>
         )}
       </section>
+      </>
+      )}
+
+      {/* ----------------------------------------------------------------------
+         URUTAN 7: Kuis Evaluasi (F7: PRD.md, USER_FLOW.md Bagian 3)
+         - Hanya tampil jika modul punya soal di kuisPerModul
+         - Dipanggil setelah bagian Sumber Pustaka
+         ---------------------------------------------------------------------- */}
+      {hasKuis && (
+        <QuizSection
+          moduleId={moduleId}
+          onQuizActiveChange={setIsQuizActive}
+          onModuleCompleted={(modId) => {
+            if (userState && onUpdateUserState) {
+              const currentCompleted = userState.completed_modules;
+              if (!currentCompleted.includes(modId) && !currentCompleted.includes(modId.replace('-', '_'))) {
+                onUpdateUserState({
+                  ...userState,
+                  completed_modules: [...currentCompleted, modId],
+                });
+              }
+            }
+          }}
+        />
+      )}
 
       {/* ----------------------------------------------------------------------
          Navigasi Footer Modul
          ---------------------------------------------------------------------- */}
+      {!isQuizActive && (
       <div className="modul-footer-nav">
         <div className="modul-footer-nav-left">
           <button
@@ -652,6 +694,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };
