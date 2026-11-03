@@ -21,23 +21,10 @@ Dokumen ini adalah instruksi wajib bagi AI agent dan anggota tim yang mengembang
 
 ## 02 Penyimpanan (LocalStorage & Privasi)
 
-* **Key:** Progres belajar disimpan di `localStorage` dengan key `_chemiverse_user_state` sebagai string JSON.
-* **Struktur objek:**
-    ```json
-    {
-      "version": 1,
-      "completed_modules": ["modul_1", "modul_2"],
-      "quiz_high_scores": { "quiz_1": 90, "quiz_2": 0 },
-      "titration_checkpoint": {
-        "titrant": "NaOH",
-        "analyte": "HCl",
-        "indicator": "fenolftalein",
-        "v_buret_used": 15.4
-      }
-    }
-    ```
-* **Aman dari error:** Semua baca/tulis `localStorage` dibungkus `try/catch`. Jika data kosong, rusak, atau `version` berbeda, aplikasi kembali ke data awal tanpa crash.
-* **Tanpa server:** Tidak ada pengiriman data siswa ke server luar. Semua perhitungan kimia diproses 100% di sisi klien.
+* **Kontrak:** Struktur penyimpanan mengikuti `docs/DATABASE.md`. Jangan membuat struktur sendiri.
+* **Satu pintu:** Semua akses `localStorage` hanya melalui `src/lib/localStore.ts`.
+* **Dilarang** memakai `localStorage.clear()`.
+* **Tanpa server:** Pertemuan 03 tidak mengirim data ke server luar.
 
 ## 03 Struktur Folder
 
