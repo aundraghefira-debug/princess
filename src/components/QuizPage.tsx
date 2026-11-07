@@ -1,14 +1,20 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import type { Halaman } from '../App';
 import QuizGabungan from './QuizGabungan';
-   import QuizBelajar from './QuizBelajar';
+import QuizBelajar from './QuizBelajar';
+
+export type ModeKuis = 'evaluasi' | 'belajar' | null;
 
 interface QuizPageProps {
   onNavigate: (halaman: Halaman) => void;
+  /** Dari Mode Belajar: buka modul lalu gulir ke sub-materi terkait */
+  onBukaMateri?: (modulId: 'modul_1' | 'modul_2' | 'modul_3', subMateriId: string) => void;
+  /** Mode yang langsung dibuka, misalnya saat kembali dari materi */
+  modeAwal?: ModeKuis;
 }
 
-type ModeKuis = 'evaluasi' | 'belajar' | null;
-const tombolGaya: React.CSSProperties = {
+const tombolGaya: CSSProperties = {
   padding: '0.6rem 1.2rem',
   borderRadius: '8px',
   border: '1px solid #67e8f9',
@@ -18,8 +24,8 @@ const tombolGaya: React.CSSProperties = {
   font: 'inherit',
 };
 
-const QuizPage = ({ onNavigate }: QuizPageProps) => {
-  const [mode, setMode] = useState<ModeKuis>(null);
+const QuizPage = ({ onNavigate, onBukaMateri, modeAwal = null }: QuizPageProps) => {
+  const [mode, setMode] = useState<ModeKuis>(modeAwal);
 
   return (
     <div style={{ maxWidth: '980px', margin: '1.5rem auto', padding: '0 1.5rem' }}>
@@ -41,13 +47,19 @@ const QuizPage = ({ onNavigate }: QuizPageProps) => {
             </button>
           </div>
           <ul>
-            <li><strong>Evaluasi:</strong> 15 soal, materi tidak bisa dibuka, pembahasan muncul setelah semua dikirim.</li>
-            <li><strong>Belajar:</strong> setelah dikirim, pembahasan menautkan ke sub materi.</li>
+            <li>
+              <strong>Evaluasi:</strong> 15 soal, materi tidak bisa dibuka, pembahasan muncul
+              setelah semua dikirim.
+            </li>
+            <li>
+              <strong>Belajar:</strong> periksa jawaban per soal, langsung ada pembahasan dan
+              tautan ke sub-materi.
+            </li>
           </ul>
         </>
       )}
 
-            {mode === 'evaluasi' && (
+      {mode === 'evaluasi' && (
         <>
           <button type="button" style={tombolGaya} onClick={() => setMode(null)}>
             ← Ganti mode
@@ -61,7 +73,7 @@ const QuizPage = ({ onNavigate }: QuizPageProps) => {
           <button type="button" style={tombolGaya} onClick={() => setMode(null)}>
             ← Ganti mode
           </button>
-             <QuizBelajar />
+          <QuizBelajar onBukaMateri={onBukaMateri} />
         </>
       )}
     </div>
