@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
-import Navbar from './Navbar';
+import { useEffect, useState } from 'react';
+import './App.css';
 import HeroSection from './HeroSection';
+import Navbar from './Navbar';
 import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
-import QuizPage from './pages/QuizPage';
-import PhCalculatorPage from './pages/PhCalculatorPage';
-import TitrationLabPage from './pages/TitrationLabPage';
-import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
 import {
   applyTheme,
   persistTheme,
@@ -15,7 +12,10 @@ import {
   subscribeSystemTheme,
   type ThemePreference,
 } from './lib/theme';
-import './App.css';
+import PhCalculatorPage from './pages/PhCalculatorPage';
+import QuizPage from './pages/QuizPage';
+import TitrationLabPage from './pages/TitrationLabPage';
+import { DEFAULT_USER_STATE, loadUserState, saveUserState, type ChemiVerseState } from './types';
 
 export type Halaman =
   | 'beranda'
@@ -56,11 +56,35 @@ function App() {
     window.scrollTo(0, 0);
   }, [halaman]);
 
+  // Setelah modul terbuka dari Mode Belajar, gulir ke sub-materi terkait
+  useEffect(() => {
+    if (!subTujuan) return;
+    const timer = window.setTimeout(() => {
+      document
+        .getElementById(`sub-${subTujuan}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setSubTujuan(null);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [halaman, subTujuan]);
+
   const handleNavigate = (targetHalaman: Halaman, quizModuleId?: string) => {
     if (targetHalaman === 'kuis' && quizModuleId) setQuizInitialModule(quizModuleId);
     if (targetHalaman !== 'kuis') setQuizInitialModule(null);
     setHalaman(targetHalaman);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBukaMateri = (modulId: 'modul_1' | 'modul_2' | 'modul_3', subMateriId: string) => {
+    setDariKuisBelajar(true);
+    setSubTujuan(subMateriId);
+    setHalaman(modulId);
+  };
+
+  const handleKembaliKeKuis = () => {
+    setDariKuisBelajar(false);
+    setModeKuisAwal('belajar');
+    setHalaman('kuis');
   };
 
   const handleStartLearning = () => {
@@ -152,6 +176,13 @@ function App() {
             <HeroSection onStartLearning={() => handleNavigate('modul_1')} />
           </div>
         )}
+        {halaman === 'kuis' && (
+          <QuizPage
+            onNavigate={handleNavigate}
+            onBukaMateri={handleBukaMateri}
+            modeAwal={modeKuisAwal}
+          />
+        )}
       </main>
 
       {/* 04. Footer Edukasi Sains */}
@@ -163,7 +194,7 @@ function App() {
                 Chemi<span className="brand-highlight">Verse</span>
               </div>
               <p className="footer-desc">
-                Laboratorium Virtual Kimia Asam Basa Berbasis Tiga Tingkat Representasi Johnstone 
+                Laboratorium Virtual Kimia Asam Basa Berbasis Tiga Tingkat Representasi Johnstone
                 (Makroskopis, Simbolik, dan Sub-Mikroskopis) untuk Siswa SMA Kelas XI dan Mahasiswa Kimia Dasar.
               </p>
             </div>

@@ -1079,3 +1079,66 @@ export const kuisPerModul: Record<Modul['id'], Kuis> = {
   },
 };
 
+// ===== Data titrasi (F6) =====
+
+// Jika daftarZat sudah ada, tambahkan tiga zat ini ke dalamnya, jangan buat daftar kedua
+export const daftarZat: Zat[] = [
+  { id: 'hcl', nama: 'Asam klorida', rumus: 'HCl', jenis: 'asam_kuat', valensi: 1 },
+  { id: 'naoh', nama: 'Natrium hidroksida', rumus: 'NaOH', jenis: 'basa_kuat', valensi: 1 },
+  {
+    id: 'ch3cooh',
+    nama: 'Asam asetat',
+    rumus: 'CH₃COOH',
+    jenis: 'asam_lemah',
+    valensi: 1,
+    // Sumber: McMurry, Fay & Robinson, Chemistry 7th Ed., hlm. 622, Tabel 15.2
+    ka: 1.8e-5,
+  },
+];
+
+export type JenisTitrasi = 'asam_kuat-basa_kuat' | 'asam_lemah-basa_kuat';
+
+export interface PresetTitrasi {
+  id: string;
+  label: string;
+  jenis: JenisTitrasi;
+  idTitrat: string;
+  idTitran: string;
+  konsentrasiTitran: number;                  // M
+  rentangKonsentrasiTitrat: [number, number]; // M
+  rentangVolumeTitrat: [number, number];      // mL
+  volumeBuret: number;                        // mL
+}
+
+export const daftarPresetTitrasi: PresetTitrasi[] = [
+  {
+    id: 'hcl-naoh',
+    label: 'HCl dititrasi NaOH',
+    jenis: 'asam_kuat-basa_kuat',
+    idTitrat: 'hcl',
+    idTitran: 'naoh',
+    konsentrasiTitran: 0.1,
+    rentangKonsentrasiTitrat: [0.05, 0.2],
+    rentangVolumeTitrat: [10, 25],
+    volumeBuret: 50,
+  },
+  {
+    id: 'ch3cooh-naoh',
+    label: 'CH₃COOH dititrasi NaOH',
+    jenis: 'asam_lemah-basa_kuat',
+    idTitrat: 'ch3cooh',
+    idTitran: 'naoh',
+    konsentrasiTitran: 0.1,
+    rentangKonsentrasiTitrat: [0.05, 0.2],
+    rentangVolumeTitrat: [10, 25],
+    volumeBuret: 50,
+  },
+];
+
+// Trayek mengikuti tabel F6 pada PRD. TODO: cocokkan dengan buku sumber
+export const daftarIndikator: Indikator[] = [
+  { id: 'metil_jingga',   nama: 'Metil jingga',   trayekBawah: 3.1, trayekAtas: 4.4,  warnaAsam: '#e53935', warnaBasa: '#fdd835' },
+  { id: 'metil_merah',    nama: 'Metil merah',    trayekBawah: 4.4, trayekAtas: 6.2,  warnaAsam: '#e53935', warnaBasa: '#fdd835' },
+  { id: 'bromtimol_biru', nama: 'Bromtimol biru', trayekBawah: 6.0, trayekAtas: 7.6,  warnaAsam: '#fdd835', warnaBasa: '#1e88e5' },
+  { id: 'fenolftalein',   nama: 'Fenolftalein',   trayekBawah: 8.3, trayekAtas: 10.0, warnaAsam: '#f5f5f5', warnaBasa: '#ec407a' },
+];

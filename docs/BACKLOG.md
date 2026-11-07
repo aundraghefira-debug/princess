@@ -56,21 +56,27 @@
 
 | No | Tugas | PJ | Pendukung | Status |
 |---|---|---|---|---|
-| 15 | Konten Modul 3 final | Ghefira | Maziatul (review) | ⬜ |
+| 15 | Konten Modul 3 final (rujuk dokumen MODUL) | Ghefira | Maziatul (review) | ⬜ |
 | 16 | Contoh soal, sumber, dan data trayek indikator Modul 3 | Khoirina | — | ⬜ |
-| 17 | Praktikum Titrasi Virtual (F6): buret, warna, kurva, tabel pengamatan | Ghefira | Khoirina | ⬜ |
+| 17a | Data titrasi di `chemData.ts`: `daftarPresetTitrasi`, `daftarIndikator`, dan Ka asam asetat dari buku sumber (hapus penanda `TODO`) | Khoirina | Maziatul (cocokkan dengan buku sumber) | ⬜ |
+| 17b | Mesin titrasi `src/utils/titrationEngine.ts` + fungsi `periksaNilaiAcuan`; semua baris nilai acuan harus lulus (±0,02) | Ghefira | Khoirina (verifikasi nilai acuan) | ⬜ |
+| 17c | Komponen `Burette.tsx` dan `Flask.tsx`: buret SVG, kran, animasi tetes, warna bertahap | Ghefira | — | ⬜ |
+| 17d | Komponen `TitrationChart.tsx`: kurva SVG, garis titik ekuivalen, pita trayek indikator | Ghefira | — | ⬜ |
+| 17e | `TitrationLab.tsx` dan `DataTable.tsx`: alur 6 tahap (Bagian 3A USER_FLOW), validasi input, tabel pengamatan, pemeriksaan jawaban | Ghefira | Khoirina | ⬜ |
+| 17f | Teks pertanyaan pemantik dan umpan balik indikator tidak cocok di `chemData.ts` | Khoirina | Maziatul (review) | ⬜ |
+| 17g | Uji alur penuh F6 untuk kedua jenis titrasi (persiapan sampai refleksi) di laptop dan tablet | Khoirina | Ghefira | ⬜ |
 | 18 | Kode Simulator Mikro–Makro (F4) | Ghefira | Maziatul | ⬜ |
 
----
+**Urutan pengerjaan F6:** 17a lebih dulu, karena 17b membutuhkan nilai Ka yang sudah diverifikasi. Setelah 17b lulus uji, 17c, 17d, dan 17f bisa dikerjakan paralel. 17e menyusul, lalu 17g.
 
 ## 5. Sprint 5 — Penyempurnaan
 
 | No | Tugas | PJ | Status |
 |---|---|---|---|
 | 19 | Soal kuis Modul 2 & 3 + pohon kesalahan (F7 lengkap) | Khoirina | ⬜ |
-| 20 | Penyimpanan progres lokal (F8) | Ghefira | ⬜ |
+| 20 | Penyimpanan progres lokal (F8), termasuk posisi terakhir simulator titrasi (perbarui `docs/DATABASE.md` lebih dulu) | Ghefira | ⬜ |
 | 21 | Uji keterbacaan seluruh materi | Maziatul | ⬜ |
-| 22 | Uji tampilan di laptop, tablet, dan HP (360px) | Ghefira | ⬜ |
+| 22 | Uji tampilan di laptop, tablet, dan HP (360px), termasuk tiga panel simulator titrasi yang tersusun vertikal | Ghefira | ⬜ |
 
 ---
 
@@ -84,6 +90,9 @@
 | Pemburu Miskonsepsi | Khoirina |
 | Ekspor progres ke file `.json` untuk guru | Ghefira |
 | Elemen menarik dari beranda P1 Maziatul & Khoirina | Diputuskan bersama |
+| Mode Soal Acak pada simulator titrasi | Khoirina |
+| Titrasi basa lemah–asam kuat | Ghefira |
+| Mode perbandingan dua kurva titrasi berdampingan dan ekspor tabel titrasi ke CSV | Ghefira |
 
 ---
 
