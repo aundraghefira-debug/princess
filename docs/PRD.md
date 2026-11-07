@@ -93,14 +93,27 @@ Siswa menggeser nilai pH dan melihat perubahan sifat larutan secara langsung. Pe
 
 ### F6. Praktikum Titrasi Virtual (Modul 3)
 **Menyelesaikan:** M5, M1
-**Jenis titrasi:** asam kuat–basa kuat (utama) dan asam lemah–basa kuat (perbandingan kurva).
-Alur mengikuti praktikum nyata:
-1. **Persiapan:** memilih titran, titrat, volume titrat, dan indikator.
-2. **Titrasi:** mengatur kran buret (tetes 0,01 mL atau aliran cepat); warna larutan di erlenmeyer berubah sesuai pH dan trayek indikator.
-3. **Kurva:** grafik pH vs volume titran digambar titik demi titik.
+**Tujuan pembelajaran:** mengacu pada dokumen MODUL (Modul 3).
+**Jenis titrasi:** asam kuat–basa kuat (utama) dan asam lemah–basa kuat (perbandingan kurva). Sesuai batasan Bagian 4, siswa hanya melihat bentuk kurva dan pH titik ekuivalen di atas 7, tanpa penurunan rumus penyangga.
+
+**Tata letak (tiga panel):**
+- **Pengaturan (kiri):** jenis titrasi, zat, konsentrasi dan volume titrat, konsentrasi titran, indikator, tombol Mulai dan Reset.
+- **Laboratorium virtual (tengah):** buret berskala dengan kran, erlenmeyer yang warnanya berubah, dan pH meter digital.
+- **Data dan analisis (kanan):** kurva titrasi, tabel pengamatan, dan kartu hasil.
+
+**Alur mengikuti praktikum nyata:**
+1. **Persiapan dan prediksi:** memilih titran, titrat, volume titrat, dan indikator; siswa menebak bentuk kurva dan pH titik ekuivalen sebelum mulai.
+2. **Titrasi:** mengatur kran buret (tetes 0,01 mL atau aliran cepat); warna larutan di erlenmeyer berubah bertahap sesuai pH dan trayek indikator.
+3. **Kurva:** grafik pH vs volume titran digambar titik demi titik. Setelah siswa menandai perkiraan titik ekuivalennya sendiri, sistem menampilkan garis Ve sebenarnya dan pita trayek indikator.
 4. **Pencatatan:** siswa mencatat volume awal dan akhir buret di tabel pengamatan.
-5. **Analisis:** siswa menghitung konsentrasi titrat dengan Va × Ma × a = Vb × Mb × b; sistem memeriksa jawabannya.
-6. **Refleksi:** perbandingan titik akhir (warna berubah) dengan titik ekuivalen; jika indikator kurang tepat, sistem menjelaskan sebabnya.
+5. **Analisis:** siswa menghitung konsentrasi titrat dengan Va × Ma × a = Vb × Mb × b; sistem memeriksa jawabannya. **Mode Soal Acak (opsional):** konsentrasi titrat disembunyikan dan diacak setiap sesi.
+6. **Refleksi:** perbandingan titik akhir (warna berubah) dengan titik ekuivalen; jika indikator kurang tepat, sistem menjelaskan sebabnya. Pertanyaan pemantik:
+   - Mengapa kurva asam lemah dimulai dari pH lebih tinggi daripada asam kuat?
+   - Mengapa pH titik ekuivalen asam lemah–basa kuat lebih dari 7?
+   - Apa yang terjadi jika CH₃COOH dititrasi dengan metil jingga?
+   - Mengapa kurva sangat curam di sekitar titik ekuivalen?
+
+**Perhitungan pH:** dilakukan oleh satu mesin perhitungan yang terpisah dari tampilan, agar tetap akurat di dekat titik ekuivalen. Detailnya ada di `DESAIN_TEKNIS.md`.
 
 **Indikator yang tersedia (trayek pH perkiraan):**
 
@@ -153,7 +166,7 @@ Menggunakan `localStorage` untuk menyimpan modul yang selesai, skor kuis terting
 | **MVP (Pertemuan 02)** | Beranda → navigasi ke Modul 1 · konten Modul 1 lengkap dan bersumber (F1) | Stabil di branch `main` |
 | **Sprint berikutnya** | F2 · pengembangan F3 · F5 · kuis Modul 1 (Pertemuan 03) | Bertahap per pertemuan |
 | **Pengembangan** | F4 · F6 · F7 lengkap · F8 | Setelah fitur sebelumnya stabil |
-| **Jika waktu cukup** | Fitur tambahan (Bagian 6) · ekspor progres ke file `.json` untuk dikirim ke guru · penjelas langkah otomatis untuk reaksi apa pun | Opsional |
+| **Jika waktu cukup** | Fitur tambahan (Bagian 6) · ekspor progres ke file `.json` untuk dikirim ke guru · penjelas langkah otomatis untuk reaksi apa pun · titrasi basa lemah–asam kuat · mode perbandingan dua kurva berdampingan · ekspor tabel titrasi ke CSV | Opsional |
 | **Di luar lingkup** | Login, database online, deployment domain resmi | Tidak dikerjakan |
 
 ---
@@ -165,6 +178,8 @@ Menggunakan `localStorage` untuk menyimpan modul yang selesai, skor kuis terting
 - [x] Setiap fitur terhubung ke minimal satu masalah belajar (M1–M5)
 - [ ] Rumus, data Ka/Kb, dan trayek indikator dicocokkan dengan buku sumber
 - [ ] PRD disetujui seluruh anggota dan dirujuk di `TEAM.md`
+- [ ] pH hasil mesin titrasi cocok dengan nilai acuan di `DESAIN_TEKNIS.md` (toleransi ±0,02)
+- [ ] Simulator titrasi dapat diselesaikan satu alur penuh (persiapan sampai refleksi) di laptop dan tablet
 
 ---
 
@@ -178,4 +193,4 @@ Menggunakan `localStorage` untuk menyimpan modul yang selesai, skor kuis terting
 
 ## 10. Dokumen Terkait
 
-`TEAM.md` · `BACKLOG.md` · `USER_FLOW.md` · `DESAIN_TEKNIS.md` · `AI_LOG.md`
+`TEAM.md` · `BACKLOG.md` · `USER_FLOW.md` · `DESAIN_TEKNIS.md` · `AI_LOG.md` · `MODUL.md`

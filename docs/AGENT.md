@@ -33,14 +33,20 @@ src/
 ├── data/
 │   └── chemData.ts            # Seluruh teks materi, rumus, data Ka/Kb, indikator, soal, sumber
 ├── utils/
-│   └── phCalc.ts              # Fungsi perhitungan pH (murni, tanpa tampilan)
+│   ├── phCalc.ts              # Fungsi perhitungan pH (murni, tanpa tampilan)
+│   └── titrationEngine.ts     # F6  Mesin pH titrasi (murni, tanpa tampilan)
 ├── components/
 │   ├── ModulDetail.tsx        # F1  Halaman modul materi
 │   ├── TheoryMatrix.tsx       # F2  Drag-and-drop teori asam basa
 │   ├── PhExplorer.tsx         # F3  Eksplorasi skala pH real-time
 │   ├── MicroMacroSimulator.tsx# F4  Gelas kimia & kaca pembesar
 │   ├── PhCalculator.tsx       # F5  Kalkulator pH bertahap
-│   ├── TitrationLab.tsx       # F6  Praktikum titrasi virtual
+│   ├── TitrationLab.tsx       # F6  Praktikum titrasi virtual (induk)
+│   ├── titration/             # F6  Komponen pendukung titrasi
+│   │   ├── Burette.tsx        #     Buret SVG, kran, animasi tetes
+│   │   ├── Flask.tsx          #     Erlenmeyer SVG, warna indikator
+│   │   ├── TitrationChart.tsx #     Kurva pH vs volume (SVG)
+│   │   └── DataTable.tsx      #     Tabel pengamatan
 │   └── QuizScaffolding.tsx    # F7  Kuis & pohon kesalahan
 ├── App.tsx
 └── App.css
@@ -54,6 +60,8 @@ src/
 * **Dilarang mengarang data:** Agent tidak boleh membuat sendiri nilai Ka, Kb, trayek indikator, atau fakta kimia. Gunakan hanya data yang sudah ada di `chemData.ts`. Jika data belum ada, tulis `// TODO: isi dari buku sumber` dan laporkan.
 * **Kondisi standar:** Semua perhitungan mengasumsikan suhu 25 °C (Kw = 1 × 10⁻¹⁴) dan hal ini ditampilkan kepada siswa.
 * **Ruang lingkup:** Ikuti Bagian 4 PRD. Larutan penyangga dan hidrolisis garam tidak dibahas sebagai materi tersendiri.
+
+* **Titrasi:** Hanya jenis titrasi yang tercantum di F6 PRD (asam kuat–basa kuat dan asam lemah–basa kuat). Jangan menambah jenis lain tanpa persetujuan tim.
 
 ## 05 Bahasa (Indonesia Baku & Komunikatif)
 
@@ -70,3 +78,18 @@ src/
 * **Eksponen:** Tulis dengan tanda kali dan pangkat: 1 × 10⁻⁵, bukan 1 x 10^-5 atau 1e-5.
 * **Presisi pH:** Hasil akhir pH/pOH ditampilkan dengan **2 angka di belakang koma**. Pembulatan hanya dilakukan saat menampilkan, bukan pada perhitungan antara.
 * **Format angka:** Tampilan memakai koma desimal sesuai kaidah Indonesia (contoh: pH 4,74; 0,01 mL), menggunakan `toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })`.
+
+## 07 Simulasi Titrasi (F6)
+
+* **Mesin terpisah:** Semua perhitungan pH titrasi hanya di `src/utils/titrationEngine.ts`. Komponen tampilan dilarang menghitung pH sendiri dan hanya memanggil mesin ini. Fungsi ini murni (tanpa efek samping dan tanpa tampilan).
+* **Metode:** Pakai persamaan kesetimbangan muatan yang dipecahkan secara numerik (bisection pada skala log₁₀[H⁺]), bukan rumus pendekatan per daerah, supaya hasilnya tetap akurat di dekat titik ekuivalen. Rinciannya ada di `docs/DESAIN_TEKNIS.md`.
+* **Sumber data:** Nilai Ka, Kb, trayek indikator, dan warna indikator dibaca dari `src/data/chemData.ts`. Jika belum ada, tulis `// TODO: isi dari buku sumber` dan laporkan. Jangan mengarang.
+* **Tanpa library baru:** Kurva dan animasi digambar dengan SVG dan CSS. Jika dirasa perlu library grafik, ajukan ke tim dulu.
+* **Warna indikator:** Warna larutan berubah bertahap (interpolasi) di dalam trayek pH, bukan berganti mendadak.
+* **Nilai acuan:** Hasil mesin harus cocok dengan nilai acuan di `docs/DESAIN_TEKNIS.md` (toleransi ±0,02). Agen wajib mencantumkan hasil pemeriksaan ini di "Laporan wajib":
+  * HCl 0,1 M (25 mL) + NaOH 0,1 M: pH awal 1,00 · pH pada 24,90 mL 3,70 · pH pada 25,00 mL 7,00 · pH pada 25,10 mL 10,30
+  * CH₃COOH 0,1 M (25 mL) + NaOH 0,1 M: pH awal 2,87 · pH pada 12,50 mL 4,74 · pH pada 25,00 mL 8,72
+* **Tampilan angka:** Volume ditulis dengan koma desimal dan satuan (contoh: 24,90 mL). Ketelitian buret 0,01 mL. Pembulatan pH hanya saat ditampilkan, sesuai Bagian 06.
+* **Pesan untuk siswa:** Gunakan "kamu" dan pesan mendidik, tanpa `alert()`. Contoh: "Indikator ini berubah warna jauh sebelum titik ekuivalen. Coba bandingkan trayek pH-nya dengan pH titik ekuivalen pada kurva."
+* **Mode Soal Acak:** Konsentrasi titrat disembunyikan dan diacak setiap sesi. Jawaban siswa diperiksa dengan toleransi yang ditetapkan di `DESAIN_TEKNIS.md`.
+* **Penyimpanan:** Posisi terakhir simulator disimpan lewat `src/lib/localStore.ts` sesuai `docs/DATABASE.md`. Ekspor CSV bukan bagian versi ini (lihat PRD Bagian 7).
