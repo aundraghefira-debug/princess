@@ -1,11 +1,10 @@
-// src/components/QuizSection.tsx
-// Kuis Mode Evaluasi (kind: "diagnostic") — Pertemuan 03
-// Soal dari src/data/chemData.ts (kuisPerModul), penyimpanan lewat src/lib/localStore.ts
-// Aturan: docs/PRD.md F7, docs/DATABASE.md
+// src/components/QuizGabungan.tsx
+// Kuis gabungan Modul 1-3, Mode Evaluasi (kind: "diagnostic")
+// Skor per modul dihitung dari jawaban; ambang tuntas 60.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { kuisPerModul } from '../data/chemData';
-import type { Modul, SoalKuis } from '../data/chemData';
+import type { SoalKuis } from '../data/chemData';
 import {
   buildActivityKey,
   calculateScore,
@@ -13,33 +12,52 @@ import {
   generateSessionId,
   getDraft,
   getRecordsByActivity,
-  markModuleCompleted,
   saveDraft,
   saveRecord,
 } from '../lib/localStore';
 import type { Draft, QuizRecord } from '../lib/localStore';
 import './QuizGabungan.css';
 
-interface QuizSectionProps {
-  moduleId: string; // 'modul_1' atau 'modul-1'
-  onQuizActiveChange?: (aktif: boolean) => void;
-  onModuleCompleted?: (moduleId: string) => void;
+const MODUL_IDS = ['modul_1', 'modul_2', 'modul_3'] as const;
+const MODUL_LABEL: Record<string, string> = {
+  modul_1: 'Modul 1',
+  modul_2: 'Modul 2',
+  modul_3: 'Modul 3',
+};
+const BATAS_TUNTAS = 60;
+
+type SoalGabungan = SoalKuis & { modulId: (typeof MODUL_IDS)[number] };
+
+const MODULE_ID = 'gabungan';
+const ACTIVITY_ID = 'kuis-gabungan';
+const QUESTION_VERSION = 'v1';
+const ACTIVITY_KEY = buildActivityKey(MODULE_ID, ACTIVITY_ID, QUESTION_VERSION);
+
+const SOAL_LIST: SoalGabungan[] = MODUL_IDS.flatMap((id) =>
+  kuisPerModul[id].soal.map((s) => ({ ...s, modulId: id }))
+);
+
+function skorPerModul(answers: Record<string, string>) {
+  return MODUL_IDS.map((id) => {
+    const soalModul = SOAL_LIST.filter((s) => s.modulId === id);
+    const benar = soalModul.filter((s) => answers[s.id] === s.jawabanBenar).length;
+    return {
+      modulId: id,
+      benar,
+      total: soalModul.length,
+      skor: calculateScore(benar, soalModul.length),
+    };
+  });
+}
+
+interface QuizGabunganProps {
+  onSelesai?: () => void;
 }
 
 type Fase = 'mulai' | 'mengerjakan' | 'hasil';
 type StatusSimpan = 'belum' | 'tersimpan' | 'gagal' | 'rusak';
 
-export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onModuleCompleted }: QuizSectionProps) {
-  // 'modul-1' → 'modul_1' (id di chemData.ts)
-  const modulId = idDariHalaman.replace('-', '_') as Modul['id'];
-  const kuis = kuisPerModul[modulId];
-
-  // 'modul_1' → 'modul-1' (format moduleId di docs/DATABASE.md)
-  const moduleId = modulId.replace('_', '-');
-  const activityKey = kuis
-    ? buildActivityKey(moduleId, kuis.activityId, kuis.questionVersion)
-    : '';
-
+export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
   const [fase, setFase] = useState<Fase>('mulai');
   const [draf, setDraf] = useState<Draft | null>(null);
   const [nomorAktif, setNomorAktif] = useState(0);
@@ -53,30 +71,24 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
 
   const judulRef = useRef<HTMLHeadingElement>(null);
 
-  // Baca draf dan hasil terakhir saat halaman dibuka (termasuk setelah refresh)
+  // Baca draf dan hasil terakhir saat dibuka (termasuk setelah refresh)
   useEffect(() => {
-    if (!kuis) return;
-    const bacaDraf = getDraft(activityKey);
+    const bacaDraf = getDraft(ACTIVITY_KEY);
     if (bacaDraf.status === 'rusak') {
       setPenyimpananRusak(true);
       return;
     }
     setDraf(bacaDraf.data);
-    const bacaHasil = getRecordsByActivity(activityKey);
+    const bacaHasil = getRecordsByActivity(ACTIVITY_KEY);
     if (bacaHasil.status === 'rusak') {
       setPenyimpananRusak(true);
       return;
     }
-    const daftarDiagnostik = bacaHasil.data.filter((r) => r.kind === 'diagnostic');
-    setHasilTerakhir(daftarDiagnostik[0] ?? null);
-  }, [kuis, activityKey]);
+    const diagnostik = bacaHasil.data.filter((r) => r.kind === 'diagnostic');
+    setHasilTerakhir(diagnostik[0] ?? null);
+  }, []);
 
-  // Beri tahu halaman modul apakah evaluasi sedang dikerjakan
-  useEffect(() => {
-    onQuizActiveChange?.(fase === 'mengerjakan');
-  }, [fase, onQuizActiveChange]);
-
-  // Saat mengerjakan: kunci scroll halaman di belakang dan fokus ke judul
+  // Saat mengerjakan: kunci scroll belakang dan fokus ke judul
   useEffect(() => {
     if (fase !== 'mengerjakan') return;
     const overflowLama = document.body.style.overflow;
@@ -87,10 +99,7 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     };
   }, [fase]);
 
-  const soalList: SoalKuis[] = useMemo(() => kuis?.soal ?? [], [kuis]);
-
-  if (!kuis || soalList.length === 0) return null;
-
+  const soalList = SOAL_LIST;
   const jawaban = draf?.answers ?? {};
   const jumlahTerjawab = soalList.filter((s) => jawaban[s.id]).length;
   const nomorBelumDijawab = soalList
@@ -98,9 +107,9 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     .filter((n): n is number => n !== null);
 
   function simpanDraf(drafBaru: Draft) {
-    const hasilSimpan = saveDraft(activityKey, drafBaru);
-    if (hasilSimpan.success) setStatusDraf('tersimpan');
-    else setStatusDraf(hasilSimpan.status === 'rusak' ? 'rusak' : 'gagal');
+    const r = saveDraft(ACTIVITY_KEY, drafBaru);
+    if (r.success) setStatusDraf('tersimpan');
+    else setStatusDraf(r.status === 'rusak' ? 'rusak' : 'gagal');
   }
 
   function mulaiEvaluasi() {
@@ -110,7 +119,6 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     setHasilTersimpan('belum');
     setNomorAktif(0);
 
-    // Draf yang belum dikirim dilanjutkan dengan ID yang sama
     if (draf) {
       setFase('mengerjakan');
       return;
@@ -118,10 +126,10 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
 
     const sekarang = new Date().toISOString();
     const drafBaru: Draft = {
-      id: generateSessionId(), // dibuat sekali saat Mulai
-      moduleId,
-      activityId: kuis.activityId,
-      questionVersion: kuis.questionVersion,
+      id: generateSessionId(),
+      moduleId: MODULE_ID,
+      activityId: ACTIVITY_ID,
+      questionVersion: QUESTION_VERSION,
       kind: 'diagnostic',
       answers: {},
       startedAt: sekarang,
@@ -144,16 +152,15 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
   }
 
   function simpanHasil(record: QuizRecord) {
-    const hasilSimpan = saveRecord(record);
-    if (!hasilSimpan.success) {
-      setHasilTersimpan(hasilSimpan.status === 'rusak' ? 'rusak' : 'gagal');
+    const r = saveRecord(record);
+    if (!r.success) {
+      setHasilTersimpan(r.status === 'rusak' ? 'rusak' : 'gagal');
       return;
     }
     setHasilTersimpan('tersimpan');
     setHasilTerakhir(record);
-    deleteDraft(activityKey);
-    markModuleCompleted(modulId);
-    onModuleCompleted?.(modulId);
+    deleteDraft(ACTIVITY_KEY);
+    onSelesai?.();
   }
 
   function kirimJawaban() {
@@ -167,11 +174,11 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
       id: draf.id,
       ownerId: 'guest',
       alias: '',
-      moduleId,
-      activityId: kuis.activityId,
-      questionVersion: kuis.questionVersion,
+      moduleId: MODULE_ID,
+      activityId: ACTIVITY_ID,
+      questionVersion: QUESTION_VERSION,
       kind: 'diagnostic',
-      answers: { ...draf.answers }, // jawaban dibekukan
+      answers: { ...draf.answers },
       correctCount: jumlahBenar,
       totalQuestions: soalList.length,
       score: calculateScore(jumlahBenar, soalList.length),
@@ -197,39 +204,32 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     setFase('mulai');
   }
 
-  // ---------------------------------------------------------------------------
-  // Tampilan: data penyimpanan rusak
-  // ---------------------------------------------------------------------------
+  // --- Data penyimpanan rusak ---
   if (penyimpananRusak) {
     return (
-      <section className="qz-section" id="kuis-evaluasi" aria-labelledby="qz-judul">
-        <span className="qz-badge">Kuis</span>
-        <h2 id="qz-judul" className="qz-heading">Evaluasi Modul</h2>
+      <section className="qz-section" aria-labelledby="qz-judul">
+        <h2 id="qz-judul" className="qz-heading">Evaluasi Modul 1–3</h2>
         <div className="qz-alert qz-alert-error" role="alert">
           Data kuis yang tersimpan di perangkat ini rusak, sehingga jawaban belum bisa
-          disimpan. Materi tetap bisa kamu baca. Minta bantuan guru untuk menghapus data
-          ChemiVerse di perangkat ini.
+          disimpan. Materi tetap bisa kamu baca.
         </div>
       </section>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Tampilan: sebelum mulai
-  // ---------------------------------------------------------------------------
+  // --- Sebelum mulai ---
   if (fase === 'mulai') {
     return (
-      <section className="qz-section" id="kuis-evaluasi" aria-labelledby="qz-judul">
-        <span className="qz-badge">Kuis</span>
-        <h2 id="qz-judul" className="qz-heading">Evaluasi Modul</h2>
-
+      <section className="qz-section" aria-labelledby="qz-judul">
+        <h2 id="qz-judul" className="qz-heading">Evaluasi Modul 1–3</h2>
         <div className="qz-card">
           <span className="qz-mode-pill">Mode Evaluasi</span>
           <ul className="qz-rules">
-            <li>Ada {soalList.length} soal pilihan ganda.</li>
+            <li>Ada {soalList.length} soal pilihan ganda dari Modul 1, 2, dan 3.</li>
             <li>Selama mengerjakan, materi tidak bisa dibuka.</li>
             <li>Jawaban bisa dikirim setelah semua soal terisi.</li>
-            <li>Skor dan pembahasan muncul setelah jawaban dikirim.</li>
+            <li>Skor per modul dan pembahasan muncul setelah jawaban dikirim.</li>
+            <li>Modul dinyatakan tuntas jika skornya minimal {BATAS_TUNTAS}.</li>
             <li>Jawabanmu tersimpan otomatis di perangkat ini.</li>
           </ul>
 
@@ -254,13 +254,11 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Tampilan: hasil dan pembahasan
-  // ---------------------------------------------------------------------------
+  // --- Hasil dan pembahasan ---
   if (fase === 'hasil' && hasil) {
+    const ringkasan = skorPerModul(hasil.answers);
     return (
-      <section className="qz-section" id="kuis-evaluasi" aria-labelledby="qz-judul">
-        <span className="qz-badge">Kuis</span>
+      <section className="qz-section" aria-labelledby="qz-judul">
         <h2 id="qz-judul" className="qz-heading">Hasil Evaluasi</h2>
 
         {hasilTersimpan === 'tersimpan' && (
@@ -290,6 +288,17 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
           </div>
         </div>
 
+        <h3>Skor per modul</h3>
+        <ul className="qz-rules">
+          {ringkasan.map((m) => (
+            <li key={m.modulId}>
+              <strong>{MODUL_LABEL[m.modulId]}:</strong> {m.benar} dari {m.total} benar
+              (skor {m.skor}) —{' '}
+              {m.skor >= BATAS_TUNTAS ? 'Tuntas' : 'Belum tuntas, pelajari ulang materinya'}
+            </li>
+          ))}
+        </ul>
+
         <ol className="qz-review-list">
           {soalList.map((soal, i) => {
             const pilihan = hasil.answers[soal.id];
@@ -297,7 +306,9 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
             return (
               <li key={soal.id} className={`qz-review ${benar ? 'is-benar' : 'is-salah'}`}>
                 <div className="qz-review-head">
-                  <span>Soal {i + 1}</span>
+                  <span>
+                    Soal {i + 1} · {MODUL_LABEL[soal.modulId]}
+                  </span>
                   <span className={`qz-tag ${benar ? 'qz-tag-benar' : 'qz-tag-salah'}`}>
                     {benar ? 'Benar' : 'Salah'}
                   </span>
@@ -342,9 +353,7 @@ export function QuizGabungan({ moduleId: idDariHalaman, onQuizActiveChange, onMo
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Tampilan: sedang mengerjakan (layar penuh, navigasi materi tertutup)
-  // ---------------------------------------------------------------------------
+  // --- Sedang mengerjakan ---
   const soal = soalList[nomorAktif];
 
   return (
