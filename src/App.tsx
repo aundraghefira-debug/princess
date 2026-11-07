@@ -3,10 +3,11 @@ import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
+import QuizPage from './components/QuizPage';
 import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
 import './App.css';
 
-export type Halaman = 'beranda' | 'eksplorasi-ph' | 'modul_1' | 'modul_2' | 'modul_3';
+export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'modul_1' | 'modul_2' | 'modul_3';
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
@@ -92,6 +93,9 @@ function App() {
             <HeroSection onStartLearning={() => handleNavigate('modul_1')} />
           </div>
         )}
+                {halaman === 'kuis' && (
+          <QuizPage onNavigate={handleNavigate} />
+        )}
       </main>
 
       {/* 04. Footer Edukasi Sains */}
@@ -103,7 +107,7 @@ function App() {
                 Chemi<span className="brand-highlight">Verse</span>
               </div>
               <p className="footer-desc">
-                Laboratorium Virtual Kimia Asam Basa Berbasis Tiga Tingkat Representasi Johnstone 
+                Laboratorium Virtual Kimia Asam Basa Berbasis Tiga Tingkat Representasi Johnstone
                 (Makroskopis, Simbolik, dan Sub-Mikroskopis) untuk Siswa SMA Kelas XI dan Mahasiswa Kimia Dasar.
               </p>
             </div>

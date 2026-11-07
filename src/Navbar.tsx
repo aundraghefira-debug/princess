@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 interface NavbarProps {
   onResetProgress?: () => void;
   activeSection?: string;
-  onNavigate?: (page: 'beranda' | 'eksplorasi-ph' | 'modul_1' | 'modul_2' | 'modul_3') => void;
+  onNavigate?: (page: 'beranda' | 'eksplorasi-ph' | 'kuis' | 'modul_1' | 'modul_2' | 'modul_3') => void;
   currentPage?: string;
 }
 
@@ -83,6 +83,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, cur
           >
             Tiga Tingkat Johnstone
           </button>
+                    <button
+            type="button"
+            id="nav-quiz"
+            className={`nav-link ${currentPage === 'kuis' ? 'active' : ''}`}
+            onClick={() => { setMobileMenuOpen(false); onNavigate?.('kuis'); }}
+          >
+            Kuis
+          </button>
         </nav>
 
         {/* Progress Tracker (F8: disembunyikan sampai fitur selesai) */}
@@ -126,6 +134,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onResetProgress, onNavigate, cur
               onClick={() => handleNavClick('johnstone-triplet')}
             >
               📐 Tiga Tingkat Johnstone
+            </button>
+                        <button
+              type="button"
+              className="mobile-nav-link"
+              onClick={() => { setMobileMenuOpen(false); onNavigate?.('kuis'); }}
+            >
+              📝 Kuis
             </button>
             {onResetProgress && (
               <button
