@@ -78,6 +78,12 @@ export interface UserProgress {
   completedModules: string[];
 }
 
+export type ThemePreference = 'light' | 'dark' | 'system';
+
+export interface UserPreferences {
+  theme: ThemePreference;
+}
+
 /**
  * Data penyimpanan di dalam satu scope (contoh: scope 'guest').
  */
@@ -85,6 +91,7 @@ export interface ScopeData {
   drafts: Record<string, Draft>; // Key: activityKey (<moduleId>:<activityId>:<questionVersion>)
   records: Record<string, QuizRecord>; // Key: record id (UUID)
   progress: UserProgress;
+  preferences?: UserPreferences;
 }
 
 /**
@@ -140,6 +147,13 @@ export interface ReadProgressResult {
   error?: string;
 }
 
+export interface ReadThemeResult {
+  success: boolean;
+  status: StorageReadStatus;
+  data: ThemePreference;
+  error?: string;
+}
+
 // ============================================================================
 // HELPER INTERNAL & UTILITAS
 // ============================================================================
@@ -170,6 +184,9 @@ export function createEmptyStorage(): ChemiVerseStorage {
         records: {},
         progress: {
           completedModules: [],
+        },
+        preferences: {
+          theme: 'system',
         },
       },
     },
@@ -260,6 +277,9 @@ function ensureScope(storage: ChemiVerseStorage, scopeName: string = DEFAULT_SCO
       progress: {
         completedModules: [],
       },
+      preferences: {
+        theme: 'system',
+      },
     };
   }
 
@@ -272,6 +292,11 @@ function ensureScope(storage: ChemiVerseStorage, scopeName: string = DEFAULT_SCO
   }
   if (!scope.progress || typeof scope.progress !== 'object' || !Array.isArray(scope.progress.completedModules)) {
     scope.progress = { completedModules: [] };
+  }
+  if (!scope.preferences || typeof scope.preferences !== 'object' || Array.isArray(scope.preferences)) {
+    scope.preferences = { theme: 'system' };
+  } else if (scope.preferences.theme !== 'light' && scope.preferences.theme !== 'dark' && scope.preferences.theme !== 'system') {
+    scope.preferences.theme = 'system';
   }
 
   return scope;
@@ -923,4 +948,41 @@ export function clearAllData(): StorageWriteResult {
 }
 export const clearChemiVerseStorage = clearAllData;
 export const removeChemiVerseData = clearAllData;
+
+// ============================================================================
+// TEMA (preferensi UI, disimpan di scope)
+// ============================================================================
+
+export function getThemePreference(scope: string = DEFAULT_SCOPE): ReadThemeResult {
+  const current = readAllData();
+  if (current.status === 'rusak') {
+    return { success: false, status: 'rusak', data: 'system', error: current.error };
+  }
+  if (current.status === 'kosong' || !current.data) {
+    return { success: true, status: 'kosong', data: 'system' };
+  }
+  const scopeObj = ensureScope(current.data, scope);
+  const theme = scopeObj.preferences?.theme;
+  if (theme === 'light' || theme === 'dark' || theme === 'system') {
+    return { success: true, status: 'berhasil', data: theme };
+  }
+  return { success: true, status: 'berhasil', data: 'system' };
+}
+
+export function setThemePreference(
+  theme: ThemePreference,
+  scope: string = DEFAULT_SCOPE
+): StorageWriteResult {
+  if (!['light', 'dark', 'system'].includes(theme)) {
+    return { success: false, status: 'gagal', error: 'Preferensi tema tidak valid.' };
+  }
+  const current = readAllData();
+  if (current.status === 'rusak') {
+    return { success: false, status: 'rusak', error: current.error };
+  }
+  const data = current.data ?? createEmptyStorage();
+  const scopeObj = ensureScope(data, scope);
+  scopeObj.preferences = { theme };
+  return writeFullStorage(data);
+}
 

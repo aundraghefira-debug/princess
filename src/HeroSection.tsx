@@ -119,36 +119,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartLearning }) => 
             </a>
           </div>
 
-          {/* Fitur sorotan ringkas */}
+          {/* Sorotan fitur */}
           <div className="hero-highlights-row">
             <div className="highlight-item">
-              <span className="highlight-icon">✨</span>
+              <span className="highlight-icon" aria-hidden="true">✨</span>
               <div className="highlight-text">
-                <div className="highlight-header">
-                  <strong>Zero-Login</strong>
-                  <span className="badge-upcoming">Segera hadir</span>
-                </div>
-                <span>Progres tersimpan di LocalStorage</span>
+                <strong>Tiga tingkat Johnstone</strong>
+                <span>Makroskopis, simbolik, dan sub-mikroskopis dalam satu alur belajar.</span>
               </div>
             </div>
             <div className="highlight-item">
-              <span className="highlight-icon">🎯</span>
+              <span className="highlight-icon" aria-hidden="true">🧪</span>
               <div className="highlight-text">
-                <div className="highlight-header">
-                  <strong>Scaffolding</strong>
-                  <span className="badge-upcoming">Segera hadir</span>
-                </div>
-                <span>Kuis adaptif dengan pohon eror</span>
+                <strong>Kuis &amp; alat interaktif</strong>
+                <span>Evaluasi, kalkulator pH, dan lab titrasi dapat diakses dari navigasi.</span>
               </div>
             </div>
             <div className="highlight-item">
-              <span className="highlight-icon">🔬</span>
+              <span className="highlight-icon" aria-hidden="true">💾</span>
               <div className="highlight-text">
-                <div className="highlight-header">
-                  <strong>Presisi 0.01 mL</strong>
-                  <span className="badge-upcoming">Segera hadir</span>
-                </div>
-                <span>Kurva titrasi digital real-time</span>
+                <strong>Progres lokal</strong>
+                <span>Data belajar tersimpan di perangkatmu (local-first).</span>
               </div>
             </div>
           </div>

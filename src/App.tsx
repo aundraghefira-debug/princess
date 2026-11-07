@@ -3,26 +3,62 @@ import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
+import QuizPage from './pages/QuizPage';
+import PhCalculatorPage from './pages/PhCalculatorPage';
+import TitrationLabPage from './pages/TitrationLabPage';
 import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
+import {
+  applyTheme,
+  persistTheme,
+  readStoredTheme,
+  resolveTheme,
+  subscribeSystemTheme,
+  type ThemePreference,
+} from './lib/theme';
 import './App.css';
 
-export type Halaman = 'beranda' | 'eksplorasi-ph' | 'modul_1' | 'modul_2' | 'modul_3';
+export type Halaman =
+  | 'beranda'
+  | 'eksplorasi-ph'
+  | 'modul_1'
+  | 'modul_2'
+  | 'modul_3'
+  | 'kuis'
+  | 'kalkulator-ph'
+  | 'laboratorium-titrasi';
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
   const [halaman, setHalaman] = useState<Halaman>('beranda');
+  const [quizInitialModule, setQuizInitialModule] = useState<string | null>(null);
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => readStoredTheme());
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
     saveUserState(userState);
   }, [userState]);
 
+  useEffect(() => {
+    const resolved = resolveTheme(themePreference);
+    applyTheme(resolved);
+    if (themePreference === 'system') {
+      return subscribeSystemTheme(applyTheme);
+    }
+  }, [themePreference]);
+
+  const handleThemeChange = (pref: ThemePreference) => {
+    setThemePreference(pref);
+    persistTheme(pref);
+  };
+
   // Gulir ke atas setiap kali halaman berganti (DESAIN_TEKNIS.md Bagian 4)
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [halaman]);
 
-  const handleNavigate = (targetHalaman: Halaman) => {
+  const handleNavigate = (targetHalaman: Halaman, quizModuleId?: string) => {
+    if (targetHalaman === 'kuis' && quizModuleId) setQuizInitialModule(quizModuleId);
+    if (targetHalaman !== 'kuis') setQuizInitialModule(null);
     setHalaman(targetHalaman);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -50,6 +86,8 @@ function App() {
         onResetProgress={handleResetProgress}
         onNavigate={handleNavigate}
         currentPage={halaman}
+        themePreference={themePreference}
+        onThemeChange={handleThemeChange}
       />
 
       <main className="main-content">
@@ -73,6 +111,28 @@ function App() {
             moduleId={halaman}
             onBackToHome={() => handleNavigate('beranda')}
             onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
+            onNavigateToQuiz={(moduleId) => handleNavigate('kuis', moduleId)}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
+        )}
+
+        {halaman === 'kuis' && (
+          <QuizPage
+            initialModuleId={quizInitialModule}
+            onBackToHome={() => handleNavigate('beranda')}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
+        )}
+
+        {halaman === 'kalkulator-ph' && (
+          <PhCalculatorPage onBackToHome={() => handleNavigate('beranda')} />
+        )}
+
+        {halaman === 'laboratorium-titrasi' && (
+          <TitrationLabPage
+            onBackToHome={() => handleNavigate('beranda')}
             userState={userState}
             onUpdateUserState={setUserState}
           />

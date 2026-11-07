@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { modules, kuisPerModul, type Modul, type SubMateri } from '../data/chemData';
+import React from 'react';
+import { modules, type Modul, type SubMateri } from '../data/chemData';
 import { type ChemiVerseState } from '../types';
-import QuizSection from './QuizSection';
 import './ModulDetail.css';
 
 export interface ModulDetailProps {
   moduleId: string; // e.g. 'modul_1' or 'modul-1'
   onBackToHome: () => void;
   onNavigateModule?: (moduleId: string) => void;
+  onNavigateToQuiz?: (moduleId: string) => void;
   userState?: ChemiVerseState;
   onUpdateUserState?: (newState: ChemiVerseState) => void;
 }
@@ -24,6 +24,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
   moduleId,
   onBackToHome,
   onNavigateModule,
+  onNavigateToQuiz,
   userState,
   onUpdateUserState,
 }) => {
@@ -68,14 +69,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
     }
   };
 
-  // State: apakah siswa sedang mengerjakan kuis (untuk menyembunyikan navigasi materi)
-  const [isQuizActive, setIsQuizActive] = useState<boolean>(false);
-
-  // Cek apakah modul ini punya soal di kuisPerModul
-  const normalizedForKuis = moduleId.replace('-', '_') as keyof typeof kuisPerModul;
-  const hasKuis = Boolean(kuisPerModul[normalizedForKuis]?.soal?.length);
-
-    if (!modul) {
+  if (!modul) {
     return (
       <div className="modul-detail-container">
         <div className="modul-top-bar">
@@ -187,9 +181,6 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
 
   return (
     <div className="modul-detail-container">
-      {/* Sembunyikan navigasi dan materi saat Mode Evaluasi aktif (F7: PRD.md) */}
-      {!isQuizActive && (
-      <>
             {/* 01. Navigasi Atas & Status Progres Belajar */}
       <div className="modul-top-bar">
         <button
@@ -247,9 +238,9 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <button type="button" className="quick-nav-link" onClick={() => scrollToSection('sumber-pustaka')}>
             6. Sumber
           </button>
-          {hasKuis && (
-            <button type="button" className="quick-nav-link" onClick={() => scrollToSection('kuis-evaluasi')}>
-              7. Kuis
+          {onNavigateToQuiz && (
+            <button type="button" className="quick-nav-link" onClick={() => onNavigateToQuiz(moduleId)}>
+              Kuis Modul
             </button>
           )}
         </nav>
@@ -631,36 +622,26 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           </div>
         )}
       </section>
-      </>
-      )}
 
-      {/* ----------------------------------------------------------------------
-         URUTAN 7: Kuis Evaluasi (F7: PRD.md, USER_FLOW.md Bagian 3)
-         - Hanya tampil jika modul punya soal di kuisPerModul
-         - Dipanggil setelah bagian Sumber Pustaka
-         ---------------------------------------------------------------------- */}
-      {hasKuis && (
-        <QuizSection
-          moduleId={moduleId}
-          onQuizActiveChange={setIsQuizActive}
-          onModuleCompleted={(modId) => {
-            if (userState && onUpdateUserState) {
-              const currentCompleted = userState.completed_modules;
-              if (!currentCompleted.includes(modId) && !currentCompleted.includes(modId.replace('-', '_'))) {
-                onUpdateUserState({
-                  ...userState,
-                  completed_modules: [...currentCompleted, modId],
-                });
-              }
-            }
-          }}
-        />
+      {/* CTA Kuis (dipindah ke halaman Kuis — poin 6) */}
+      {onNavigateToQuiz && (
+        <section className="modul-section-block" aria-labelledby="kuis-cta-title">
+          <div className="section-title-badge">
+            <span>Evaluasi</span>
+          </div>
+          <h2 id="kuis-cta-title" className="section-main-heading">Kuis Modul</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+            Kerjakan kuis evaluasi di halaman Kuis terpisah agar fokus dan alur belajar tetap rapi.
+          </p>
+          <button type="button" className="btn-primary-action" onClick={() => onNavigateToQuiz(moduleId)}>
+            Buka Halaman Kuis
+          </button>
+        </section>
       )}
 
       {/* ----------------------------------------------------------------------
          Navigasi Footer Modul
          ---------------------------------------------------------------------- */}
-      {!isQuizActive && (
       <div className="modul-footer-nav">
         <div className="modul-footer-nav-left">
           <button
@@ -694,7 +675,6 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           )}
         </div>
       </div>
-      )}
     </div>
   );
 };
