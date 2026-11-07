@@ -1,6 +1,7 @@
 import React from 'react';
 import { modules } from './data/chemData';
 import { type ChemiVerseState } from './types';
+import MediaFigure from './components/media/MediaFigure';
 
 interface TopicCardsProps {
   userState?: ChemiVerseState;
@@ -126,6 +127,15 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
               <span>Perilaku partikel ion molekuler nyata di tingkat mikroskopis (ion H⁺, OH⁻, dan H₃O⁺ di dalam pelarut air).</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="topic-media-block" aria-label="Media pembelajaran">
+        <h3 className="section-title" style={{ fontSize: '1.35rem', marginBottom: '0.5rem' }}>Gambar &amp; Video Pembelajaran</h3>
+        <p className="section-subtitle" style={{ marginBottom: '1rem' }}>Area placeholder — ganti dengan aset di <code>public/media/</code> (gambar atau video).</p>
+        <div className="topic-media-grid">
+          <MediaFigure alt="Ilustrasi konsep asam basa (placeholder)" caption="Contoh slot gambar: tambahkan file ke public/media/images/ dan isi src." />
+          <MediaFigure kind="video" alt="Video pembelajaran asam basa (placeholder)" caption="Contoh slot video: MP4 lokal atau gunakan kind embed untuk YouTube/Vimeo." />
         </div>
       </div>
     </section>

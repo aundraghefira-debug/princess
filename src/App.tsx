@@ -1,26 +1,55 @@
-import { useState, useEffect } from 'react';
-import Navbar from './Navbar';
+import { useEffect, useState } from 'react';
+import './App.css';
 import HeroSection from './HeroSection';
+import Navbar from './Navbar';
 import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
-import QuizPage, { type ModeKuis } from './components/QuizPage';
-import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
-import './App.css';
+import {
+  applyTheme,
+  persistTheme,
+  readStoredTheme,
+  resolveTheme,
+  subscribeSystemTheme,
+  type ThemePreference,
+} from './lib/theme';
+import PhCalculatorPage from './pages/PhCalculatorPage';
+import QuizPage from './pages/QuizPage';
+import TitrationLabPage from './pages/TitrationLabPage';
+import { DEFAULT_USER_STATE, loadUserState, saveUserState, type ChemiVerseState } from './types';
 
-export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'modul_1' | 'modul_2' | 'modul_3';
+export type Halaman =
+  | 'beranda'
+  | 'eksplorasi-ph'
+  | 'modul_1'
+  | 'modul_2'
+  | 'modul_3'
+  | 'kuis'
+  | 'kalkulator-ph'
+  | 'laboratorium-titrasi';
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
   const [halaman, setHalaman] = useState<Halaman>('beranda');
-  // Mode Belajar → materi: sub-materi tujuan dan tombol kembali ke kuis
-  const [subTujuan, setSubTujuan] = useState<string | null>(null);
-  const [dariKuisBelajar, setDariKuisBelajar] = useState(false);
-  const [modeKuisAwal, setModeKuisAwal] = useState<ModeKuis>(null);
+  const [quizInitialModule, setQuizInitialModule] = useState<string | null>(null);
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => readStoredTheme());
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
     saveUserState(userState);
   }, [userState]);
+
+  useEffect(() => {
+    const resolved = resolveTheme(themePreference);
+    applyTheme(resolved);
+    if (themePreference === 'system') {
+      return subscribeSystemTheme(applyTheme);
+    }
+  }, [themePreference]);
+
+  const handleThemeChange = (pref: ThemePreference) => {
+    setThemePreference(pref);
+    persistTheme(pref);
+  };
 
   // Gulir ke atas setiap kali halaman berganti (DESAIN_TEKNIS.md Bagian 4)
   useEffect(() => {
@@ -39,9 +68,9 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [halaman, subTujuan]);
 
-  const handleNavigate = (targetHalaman: Halaman) => {
-    setDariKuisBelajar(false);
-    setModeKuisAwal(null);
+  const handleNavigate = (targetHalaman: Halaman, quizModuleId?: string) => {
+    if (targetHalaman === 'kuis' && quizModuleId) setQuizInitialModule(quizModuleId);
+    if (targetHalaman !== 'kuis') setQuizInitialModule(null);
     setHalaman(targetHalaman);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -81,6 +110,8 @@ function App() {
         onResetProgress={handleResetProgress}
         onNavigate={handleNavigate}
         currentPage={halaman}
+        themePreference={themePreference}
+        onThemeChange={handleThemeChange}
       />
 
       <main className="main-content">
@@ -99,24 +130,36 @@ function App() {
         )}
 
         {(halaman === 'modul_1' || halaman === 'modul_2' || halaman === 'modul_3') && (
-          <>
-            {/* Tombol kembali ke Mode Belajar, hanya muncul jika datang dari kuis */}
-            {dariKuisBelajar && (
-              <div style={{ maxWidth: '980px', margin: '1.5rem auto 0', padding: '0 1.5rem' }}>
-                <button type="button" className="btn-back-home" onClick={handleKembaliKeKuis}>
-                  ← Kembali ke Latihan (Mode Belajar)
-                </button>
-              </div>
-            )}
-            {/* Komponen Detail Modul Sesuai USER_FLOW.md Bagian 3 */}
-            <ModulDetail
-              moduleId={halaman}
-              onBackToHome={() => handleNavigate('beranda')}
-              onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
-              userState={userState}
-              onUpdateUserState={setUserState}
-            />
-          </>
+          /* Komponen Detail Modul Sesuai USER_FLOW.md Bagian 3 */
+          <ModulDetail
+            moduleId={halaman}
+            onBackToHome={() => handleNavigate('beranda')}
+            onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
+            onNavigateToQuiz={(moduleId) => handleNavigate('kuis', moduleId)}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
+        )}
+
+        {halaman === 'kuis' && (
+          <QuizPage
+            initialModuleId={quizInitialModule}
+            onBackToHome={() => handleNavigate('beranda')}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
+        )}
+
+        {halaman === 'kalkulator-ph' && (
+          <PhCalculatorPage onBackToHome={() => handleNavigate('beranda')} />
+        )}
+
+        {halaman === 'laboratorium-titrasi' && (
+          <TitrationLabPage
+            onBackToHome={() => handleNavigate('beranda')}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
         )}
 
         {halaman === 'eksplorasi-ph' && (
