@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Halaman } from '../App';
 import QuizGabungan from './QuizGabungan';
+   import QuizBelajar from './QuizBelajar';
 
 interface QuizPageProps {
   onNavigate: (halaman: Halaman) => void;
@@ -57,10 +58,10 @@ const QuizPage = ({ onNavigate }: QuizPageProps) => {
 
       {mode === 'belajar' && (
         <>
-          <p>Mode Belajar sedang disiapkan.</p>
           <button type="button" style={tombolGaya} onClick={() => setMode(null)}>
             ← Ganti mode
           </button>
+             <QuizBelajar />
         </>
       )}
     </div>
