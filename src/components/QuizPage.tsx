@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Halaman } from '../App';
+import QuizGabungan from './QuizGabungan';
 
 interface QuizPageProps {
   onNavigate: (halaman: Halaman) => void;
@@ -45,11 +46,18 @@ const QuizPage = ({ onNavigate }: QuizPageProps) => {
         </>
       )}
 
-      {mode !== null && (
+            {mode === 'evaluasi' && (
         <>
-          <p>
-            Mode {mode === 'evaluasi' ? 'Evaluasi' : 'Belajar'} dipilih. Soal sedang disiapkan.
-          </p>
+          <button type="button" style={tombolGaya} onClick={() => setMode(null)}>
+            ← Ganti mode
+          </button>
+          <QuizGabungan />
+        </>
+      )}
+
+      {mode === 'belajar' && (
+        <>
+          <p>Mode Belajar sedang disiapkan.</p>
           <button type="button" style={tombolGaya} onClick={() => setMode(null)}>
             ← Ganti mode
           </button>
