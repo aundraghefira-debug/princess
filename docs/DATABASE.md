@@ -54,13 +54,12 @@ Isinya satu string JSON dengan struktur:
 
 Format: `<moduleId>:<activityId>:<questionVersion>`
 
-| Aktivitas | activityKey |
-|---|---|
-| Kuis Modul 1 | `modul-1:kuis-teori:v1` |
-| Kuis Modul 2 | `modul-2:kuis-ph:v1` |
-| Kuis Modul 3 | `modul-3:kuis-titrasi:v1` |
+| Aktivitas | activityKey | kind |
+|---|---|---|
+| Kuis gabungan Modul 1–3, Mode Evaluasi | `gabungan:kuis-gabungan:v1` | `diagnostic` |
+| Kuis gabungan Modul 1–3, Mode Belajar | `gabungan:kuis-belajar:v1` | `practice` |
 
-Jika isi soal atau kunci jawaban diubah setelah dipakai siswa, naikkan versinya (`v2`) dan **jangan hapus bank soal `v1`**, supaya hasil lama tetap bisa dibaca.
+Soal diambil dari `kuisPerModul` di `src/data/chemData.ts` (5 soal per modul, total 15). Kunci aktivitas per modul (`modul-1:kuis-teori:v1`, dst.) tidak lagi dipakai untuk menyimpan hasil, karena kuis sudah dipindah ke halaman Kuis.
 
 ---
 
@@ -166,3 +165,16 @@ Semua baca/tulis dibungkus `try/catch`.
 - `receivedAt` dibuat oleh server, terpisah dari `completedAt`.
 - Satu akun guru dapat membaca hasil siswa di kelasnya.
 - Kredensial (API key, config Firebase/Supabase) tidak disimpan di repo atau AI_LOG.
+
+---
+
+## 10. Rencana Integrasi Bab 4
+
+| Hal | Keputusan |
+|---|---|
+| Provider | **Firebase** (Authentication + Firestore). Supabase sebagai cadangan. |
+| Guru | Satu guru untuk satu kelas, membaca hasil siswa di kelasnya. |
+| Data yang dikirim ke cloud | Record hasil (`records`) yang dipilih siswa setelah login. |
+| Data yang tetap lokal | Draf yang sedang dikerjakan (`drafts`). |
+| Label status hasil | `local` (tersimpan di perangkat) → `pending` (menunggu kirim) → `synced` (terkirim). |
+| Kredensial | Disimpan di `.env.local`, tidak di-commit, tidak ditulis di AI_LOG. |

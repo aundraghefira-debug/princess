@@ -1,5 +1,5 @@
 import React from 'react';
-import { modules, type Modul, type SubMateri } from '../data/chemData';
+import { modules, kuisPerModul, type Modul, type SubMateri } from '../data/chemData';
 import { type ChemiVerseState } from '../types';
 import './ModulDetail.css';
 
@@ -68,6 +68,10 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Cek apakah modul ini punya soal di kuisPerModul
+  const normalizedForKuis = moduleId.replace('-', '_') as keyof typeof kuisPerModul;
+  const hasKuis = Boolean(kuisPerModul[normalizedForKuis]?.soal?.length);
 
   if (!modul) {
     return (
@@ -181,7 +185,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
 
   return (
     <div className="modul-detail-container">
-            {/* 01. Navigasi Atas & Status Progres Belajar */}
+      {/* 01. Navigasi Atas & Status Progres Belajar */}
       <div className="modul-top-bar">
         <button
           type="button"
@@ -368,8 +372,8 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <div className="submateri-list-wrapper">
             {modul.subMateri.map((sub, sIdx) => {
               const equations = getPersamaanReaksi(sub);
-                 const repMakro = sub.representasi?.makroskopis;
-   const repSubmikro = sub.representasi?.submikroskopis;
+              const repMakro = sub.representasi?.makroskopis;
+              const repSubmikro = sub.representasi?.submikroskopis;
               const repSimbolik = sub.representasi?.simbolik;
 
               return (
@@ -611,7 +615,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
             {modul.sumber.map((smb, smbIdx) => (
               <li key={smbIdx} className="sumber-item">
                 <span className="sumber-num">[{smbIdx + 1}]</span>
-                   <span>{smb.penulis} ({smb.tahun}). <em>{smb.judul}</em>. {smb.penerbit}{smb.halaman ? `, ${smb.halaman}` : ''}.</span>
+                <span>{smb.penulis} ({smb.tahun}). <em>{smb.judul}</em>. {smb.penerbit}{smb.halaman ? `, ${smb.halaman}` : ''}.</span>
               </li>
             ))}
           </ul>
@@ -623,18 +627,27 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
         )}
       </section>
 
-      {/* CTA Kuis (dipindah ke halaman Kuis — poin 6) */}
-      {onNavigateToQuiz && (
-        <section className="modul-section-block" aria-labelledby="kuis-cta-title">
+      {/* ----------------------------------------------------------------------
+         URUTAN 7: Ajakan ke halaman Kuis (Mode Belajar & Mode Evaluasi)
+         Kuis lengkap ada di halaman Kuis (QuizPage), bukan di dalam modul.
+         ---------------------------------------------------------------------- */}
+      {hasKuis && onNavigateModule && (
+        <section id="kuis-evaluasi" className="modul-section-block">
           <div className="section-title-badge">
-            <span>Evaluasi</span>
+            <span>📝 Bagian 7: Kuis</span>
           </div>
-          <h2 id="kuis-cta-title" className="section-main-heading">Kuis Modul</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-            Kerjakan kuis evaluasi di halaman Kuis terpisah agar fokus dan alur belajar tetap rapi.
+          <h2 className="section-main-heading">Uji Pemahamanmu</h2>
+          <p className="modul-hero-desc">
+            Sudah selesai membaca materi? Kerjakan kuis Modul 1–3. Pilih Mode Belajar untuk
+            latihan dengan pembahasan langsung, atau Mode Evaluasi untuk mengukur pemahamanmu.
           </p>
-          <button type="button" className="btn-primary-action" onClick={() => onNavigateToQuiz(moduleId)}>
-            Buka Halaman Kuis
+          <button
+            type="button"
+            className="btn-primary-action"
+            onClick={() => onNavigateModule('kuis')}
+          >
+            <span>Kerjakan Kuis</span>
+            <span>→</span>
           </button>
         </section>
       )}
