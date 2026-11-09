@@ -1,26 +1,58 @@
-import { useState, useEffect } from 'react';
-import Navbar from './Navbar';
+import { useEffect, useState } from 'react';
+import './App.css';
 import HeroSection from './HeroSection';
+import Navbar from './Navbar';
 import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
+import {
+  applyTheme,
+  persistTheme,
+  readStoredTheme,
+  resolveTheme,
+  subscribeSystemTheme,
+  type ThemePreference,
+} from './lib/theme';
+import PhCalculatorPage from './pages/PhCalculatorPage';
 import QuizPage, { type ModeKuis } from './components/QuizPage';
-import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
-import './App.css';
+import TitrationLabPage from './pages/TitrationLabPage';
+import { DEFAULT_USER_STATE, loadUserState, saveUserState, type ChemiVerseState } from './types';
 
-export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'modul_1' | 'modul_2' | 'modul_3';
+export type Halaman =
+  | 'beranda'
+  | 'eksplorasi-ph'
+  | 'modul_1'
+  | 'modul_2'
+  | 'modul_3'
+  | 'kuis'
+  | 'kalkulator-ph'
+  | 'laboratorium-titrasi';
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
   const [halaman, setHalaman] = useState<Halaman>('beranda');
-  // Mode Belajar → materi: sub-materi tujuan dan tombol kembali ke kuis
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => readStoredTheme());
+  // Mode Belajar → materi: sub-materi tujuan dan mode kuis saat kembali dari materi
   const [subTujuan, setSubTujuan] = useState<string | null>(null);
   const [dariKuisBelajar, setDariKuisBelajar] = useState(false);
-  const [modeKuisAwal, setModeKuisAwal] = useState<ModeKuis>(null);
+  const [modeKuisAwal, setModeKuisAwal] = useState<ModeKuis | null>(null);
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
     saveUserState(userState);
   }, [userState]);
+
+  useEffect(() => {
+    const resolved = resolveTheme(themePreference);
+    applyTheme(resolved);
+    if (themePreference === 'system') {
+      return subscribeSystemTheme(applyTheme);
+    }
+  }, [themePreference]);
+
+  const handleThemeChange = (pref: ThemePreference) => {
+    setThemePreference(pref);
+    persistTheme(pref);
+  };
 
   // Gulir ke atas setiap kali halaman berganti (DESAIN_TEKNIS.md Bagian 4)
   useEffect(() => {
@@ -81,6 +113,8 @@ function App() {
         onResetProgress={handleResetProgress}
         onNavigate={handleNavigate}
         currentPage={halaman}
+        themePreference={themePreference}
+        onThemeChange={handleThemeChange}
       />
 
       <main className="main-content">
@@ -113,10 +147,31 @@ function App() {
               moduleId={halaman}
               onBackToHome={() => handleNavigate('beranda')}
               onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
+              onNavigateToQuiz={() => handleNavigate('kuis')}
               userState={userState}
               onUpdateUserState={setUserState}
             />
           </>
+        )}
+
+        {halaman === 'kuis' && (
+          <QuizPage
+            onNavigate={handleNavigate}
+            onBukaMateri={handleBukaMateri}
+            modeAwal={modeKuisAwal}
+          />
+        )}
+
+        {halaman === 'kalkulator-ph' && (
+          <PhCalculatorPage onBackToHome={() => handleNavigate('beranda')} />
+        )}
+
+        {halaman === 'laboratorium-titrasi' && (
+          <TitrationLabPage
+            onBackToHome={() => handleNavigate('beranda')}
+            userState={userState}
+            onUpdateUserState={setUserState}
+          />
         )}
 
         {halaman === 'eksplorasi-ph' && (
@@ -132,13 +187,6 @@ function App() {
             </div>
             <HeroSection onStartLearning={() => handleNavigate('modul_1')} />
           </div>
-        )}
-        {halaman === 'kuis' && (
-          <QuizPage
-            onNavigate={handleNavigate}
-            onBukaMateri={handleBukaMateri}
-            modeAwal={modeKuisAwal}
-          />
         )}
       </main>
 

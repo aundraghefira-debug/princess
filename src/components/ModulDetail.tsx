@@ -7,6 +7,7 @@ export interface ModulDetailProps {
   moduleId: string; // e.g. 'modul_1' or 'modul-1'
   onBackToHome: () => void;
   onNavigateModule?: (moduleId: string) => void;
+  onNavigateToQuiz?: (moduleId: string) => void;
   userState?: ChemiVerseState;
   onUpdateUserState?: (newState: ChemiVerseState) => void;
 }
@@ -23,6 +24,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
   moduleId,
   onBackToHome,
   onNavigateModule,
+  onNavigateToQuiz,
   userState,
   onUpdateUserState,
 }) => {
@@ -71,7 +73,7 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
   const normalizedForKuis = moduleId.replace('-', '_') as keyof typeof kuisPerModul;
   const hasKuis = Boolean(kuisPerModul[normalizedForKuis]?.soal?.length);
 
-    if (!modul) {
+  if (!modul) {
     return (
       <div className="modul-detail-container">
         <div className="modul-top-bar">
@@ -240,9 +242,9 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <button type="button" className="quick-nav-link" onClick={() => scrollToSection('sumber-pustaka')}>
             6. Sumber
           </button>
-          {hasKuis && (
-            <button type="button" className="quick-nav-link" onClick={() => scrollToSection('kuis-evaluasi')}>
-              7. Kuis
+          {onNavigateToQuiz && (
+            <button type="button" className="quick-nav-link" onClick={() => onNavigateToQuiz(moduleId)}>
+              Kuis Modul
             </button>
           )}
         </nav>

@@ -27,3 +27,4 @@ dist-ssr
 .gitignore
 .env.local
 .agent/skills/find-skills
+Git
