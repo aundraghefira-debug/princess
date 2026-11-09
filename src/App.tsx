@@ -13,7 +13,7 @@ import {
   type ThemePreference,
 } from './lib/theme';
 import PhCalculatorPage from './pages/PhCalculatorPage';
-import QuizPage from './pages/QuizPage';
+import QuizPage, { type ModeKuis } from './components/QuizPage';
 import TitrationLabPage from './pages/TitrationLabPage';
 import { DEFAULT_USER_STATE, loadUserState, saveUserState, type ChemiVerseState } from './types';
 
@@ -30,8 +30,11 @@ export type Halaman =
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
   const [halaman, setHalaman] = useState<Halaman>('beranda');
-  const [quizInitialModule, setQuizInitialModule] = useState<string | null>(null);
   const [themePreference, setThemePreference] = useState<ThemePreference>(() => readStoredTheme());
+  // Mode Belajar → materi: sub-materi tujuan dan mode kuis saat kembali dari materi
+  const [subTujuan, setSubTujuan] = useState<string | null>(null);
+  const [dariKuisBelajar, setDariKuisBelajar] = useState(false);
+  const [modeKuisAwal, setModeKuisAwal] = useState<ModeKuis | null>(null);
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
@@ -68,9 +71,9 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [halaman, subTujuan]);
 
-  const handleNavigate = (targetHalaman: Halaman, quizModuleId?: string) => {
-    if (targetHalaman === 'kuis' && quizModuleId) setQuizInitialModule(quizModuleId);
-    if (targetHalaman !== 'kuis') setQuizInitialModule(null);
+  const handleNavigate = (targetHalaman: Halaman) => {
+    setDariKuisBelajar(false);
+    setModeKuisAwal(null);
     setHalaman(targetHalaman);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -130,23 +133,32 @@ function App() {
         )}
 
         {(halaman === 'modul_1' || halaman === 'modul_2' || halaman === 'modul_3') && (
-          /* Komponen Detail Modul Sesuai USER_FLOW.md Bagian 3 */
-          <ModulDetail
-            moduleId={halaman}
-            onBackToHome={() => handleNavigate('beranda')}
-            onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
-            onNavigateToQuiz={(moduleId) => handleNavigate('kuis', moduleId)}
-            userState={userState}
-            onUpdateUserState={setUserState}
-          />
+          <>
+            {/* Tombol kembali ke Mode Belajar, hanya muncul jika datang dari kuis */}
+            {dariKuisBelajar && (
+              <div style={{ maxWidth: '980px', margin: '1.5rem auto 0', padding: '0 1.5rem' }}>
+                <button type="button" className="btn-back-home" onClick={handleKembaliKeKuis}>
+                  ← Kembali ke Latihan (Mode Belajar)
+                </button>
+              </div>
+            )}
+            {/* Komponen Detail Modul Sesuai USER_FLOW.md Bagian 3 */}
+            <ModulDetail
+              moduleId={halaman}
+              onBackToHome={() => handleNavigate('beranda')}
+              onNavigateModule={(nextModuleId) => handleNavigate(nextModuleId as Halaman)}
+              onNavigateToQuiz={() => handleNavigate('kuis')}
+              userState={userState}
+              onUpdateUserState={setUserState}
+            />
+          </>
         )}
 
         {halaman === 'kuis' && (
           <QuizPage
-            initialModuleId={quizInitialModule}
-            onBackToHome={() => handleNavigate('beranda')}
-            userState={userState}
-            onUpdateUserState={setUserState}
+            onNavigate={handleNavigate}
+            onBukaMateri={handleBukaMateri}
+            modeAwal={modeKuisAwal}
           />
         )}
 
@@ -175,13 +187,6 @@ function App() {
             </div>
             <HeroSection onStartLearning={() => handleNavigate('modul_1')} />
           </div>
-        )}
-        {halaman === 'kuis' && (
-          <QuizPage
-            onNavigate={handleNavigate}
-            onBukaMateri={handleBukaMateri}
-            modeAwal={modeKuisAwal}
-          />
         )}
       </main>
 
