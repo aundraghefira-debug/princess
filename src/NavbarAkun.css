@@ -1,0 +1,66 @@
+/* Chip akun di Navbar (tampil saat sudah login) */
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(236, 72, 153, 0.45);
+  background: rgba(124, 58, 237, 0.18);
+}
+
+.nav-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #ec4899, #7c3aed);
+  flex-shrink: 0;
+}
+
+.nav-user-name {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nav-user-logout {
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #ec4899, #7c3aed);
+  cursor: pointer;
+}
+.nav-user-logout:hover {
+  filter: brightness(1.1);
+}
+
+/* Di layar kecil, chip akun disembunyikan (akun ada di menu seluler) */
+@media (max-width: 860px) {
+  .nav-user {
+    display: none;
+  }
+}
