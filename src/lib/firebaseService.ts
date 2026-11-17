@@ -1,6 +1,6 @@
 // src/lib/firebaseService.ts
 // Layanan login Firebase: Google dan Email/Sandi.
-// Kirim/baca hasil kuis ditambahkan pada tahap berikutnya.
+// Kirim dan baca hasil kuis (attempts) mengikuti kontrak docs/DATABASE.md.
 
 import { initializeApp } from 'firebase/app';
 import {
@@ -22,7 +22,7 @@ import {
   doc,
   getDocFromServer,
   setDoc,
-  getDocs,
+  getDocsFromServer,
   collection,
   query,
   where,
@@ -190,12 +190,55 @@ export interface AttemptRecord {
   receivedAt?: unknown;
 }
 
+/** Isi percobaan yang dikirim (tanpa receivedAt, karena itu dibuat oleh server). */
+type IsiPercobaan = Omit<AttemptRecord, 'receivedAt'>;
+
+const KUNCI_ISI: (keyof IsiPercobaan)[] = [
+  'id',
+  'ownerId',
+  'alias',
+  'moduleId',
+  'activityId',
+  'questionVersion',
+  'kind',
+  'score',
+  'completedAt',
+];
+
+/** Membandingkan isi dokumen server dengan isi yang akan dikirim. */
+function samaIsi(server: Record<string, unknown>, lokal: IsiPercobaan): boolean {
+  for (const kunci of KUNCI_ISI) {
+    if (server[kunci] !== lokal[kunci]) return false;
+  }
+  const jawabanServer = (server.answers ?? {}) as Record<string, unknown>;
+  const kunciLokal = Object.keys(lokal.answers);
+  if (Object.keys(jawabanServer).length !== kunciLokal.length) return false;
+  return kunciLokal.every((k) => jawabanServer[k] === lokal.answers[k]);
+}
+
+function petakanDokumen(id: string, data: Record<string, unknown>): AttemptRecord {
+  return {
+    id: (data.id as string | undefined) ?? id,
+    ownerId: data.ownerId as string,
+    alias: data.alias as string,
+    moduleId: data.moduleId as string,
+    activityId: data.activityId as string,
+    questionVersion: data.questionVersion as string,
+    kind: data.kind as string,
+    answers: data.answers as Record<string, string>,
+    score: data.score as number,
+    completedAt: data.completedAt as string,
+    receivedAt: data.receivedAt,
+  };
+}
+
 /**
- * Menyimpan hasil kuis ke Firestore koleksi 'attempts'.
- * Mengikuti Lampiran B-A3 dan kontrak DATABASE.md.
- * Menggunakan doc(db, 'attempts', attempt.id) dan setDoc agar ID percobaan tetap sama
- * dan pengiriman ulang (retry) tidak menggandakan data.
- * Hanya akun yang tercantum di members/ yang boleh mengirim.
+ * Mengirim hasil kuis ke Firestore koleksi 'attempts'.
+ * - ID percobaan tetap. Jika ID sudah ada di server dengan isi yang SAMA,
+ *   dianggap berhasil tanpa menulis ulang (retry aman, tidak menggandakan data).
+ * - Jika ID sudah ada tetapi isinya berbeda, pengiriman ditolak.
+ * - Berhasil hanya jika server mengonfirmasi dokumen yang sama.
+ * - Hanya akun yang tercantum di members/ yang boleh mengirim.
  */
 export async function saveAttempt(record: {
   id: string;
@@ -220,13 +263,13 @@ export async function saveAttempt(record: {
   }
 
   const { db } = clients();
-  const docRef = doc(db, 'attempts', record.id);
+  const ref = doc(db, 'attempts', record.id);
 
-  // Field persis sesuai kontrak Lampiran B-A3 dan DATABASE.md
-  const payload = {
+  // Alias harus sama persis dengan alias di members/ (diperiksa oleh Rules)
+  const isi: IsiPercobaan = {
     id: record.id,
     ownerId: user.uid,
-    alias: access.anggota.alias || record.alias || '',
+    alias: access.anggota.alias,
     moduleId: record.moduleId,
     activityId: record.activityId,
     questionVersion: record.questionVersion,
@@ -234,71 +277,60 @@ export async function saveAttempt(record: {
     answers: record.answers,
     score: record.score,
     completedAt: record.completedAt,
-    receivedAt: serverTimestamp(),
   };
 
-  await setDoc(docRef, payload);
+  // 1. Sudah ada di server? Isi sama = sudah terkirim, isi beda = tolak.
+  const sebelum = await getDocFromServer(ref);
+  if (sebelum.exists()) {
+    if (!samaIsi(sebelum.data(), isi)) {
+      throw new Error('ID percobaan ini sudah berisi hasil yang berbeda di server.');
+    }
+    return;
+  }
+
+  // 2. Pastikan akun tidak berganti selama proses
+  if ((await getIdentity())?.uid !== user.uid) {
+    throw new Error('Akun pengirim berubah. Coba kirim lagi.');
+  }
+
+  // 3. Kirim. Jika gagal, periksa apakah pengiriman lain sempat berhasil.
+  try {
+    await setDoc(ref, { ...isi, receivedAt: serverTimestamp() });
+  } catch (error) {
+    const ada = await getDocFromServer(ref).catch(() => null);
+    if (!ada || !ada.exists() || !samaIsi(ada.data(), isi)) throw error;
+  }
+
+  // 4. Konfirmasi dari server
+  const tersimpan = await getDocFromServer(ref);
+  if (!tersimpan.exists() || !samaIsi(tersimpan.data(), isi)) {
+    throw new Error('Penerimaan oleh server belum terkonfirmasi. Coba kirim lagi.');
+  }
 }
 
-/**
- * Mengambil seluruh hasil percobaan milik siswa yang sedang masuk.
- */
+/** Mengambil hasil percobaan milik akun yang sedang masuk (langsung dari server). */
 export async function listMine(): Promise<AttemptRecord[]> {
   const user = await getIdentity();
   if (!user) return [];
 
   const { db } = clients();
   const q = query(collection(db, 'attempts'), where('ownerId', '==', user.uid));
-  const snap = await getDocs(q);
+  const snap = await getDocsFromServer(q);
 
-  const list: AttemptRecord[] = snap.docs.map((d) => {
-    const data = d.data();
-    return {
-      id: data.id ?? d.id,
-      ownerId: data.ownerId,
-      alias: data.alias,
-      moduleId: data.moduleId,
-      activityId: data.activityId,
-      questionVersion: data.questionVersion,
-      kind: data.kind,
-      answers: data.answers,
-      score: data.score,
-      completedAt: data.completedAt,
-      receivedAt: data.receivedAt,
-    };
-  });
-
+  const list = snap.docs.map((d) => petakanDokumen(d.id, d.data()));
   list.sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
   return list;
 }
 
-/**
- * Mengambil seluruh hasil percobaan siswa di kelas (untuk peran guru).
- */
+/** Mengambil seluruh hasil kelas (hanya guru yang diizinkan oleh Rules). */
 export async function listClass(): Promise<AttemptRecord[]> {
   const user = await getIdentity();
   if (!user) return [];
 
   const { db } = clients();
-  const snap = await getDocs(collection(db, 'attempts'));
+  const snap = await getDocsFromServer(collection(db, 'attempts'));
 
-  const list: AttemptRecord[] = snap.docs.map((d) => {
-    const data = d.data();
-    return {
-      id: data.id ?? d.id,
-      ownerId: data.ownerId,
-      alias: data.alias,
-      moduleId: data.moduleId,
-      activityId: data.activityId,
-      questionVersion: data.questionVersion,
-      kind: data.kind,
-      answers: data.answers,
-      score: data.score,
-      completedAt: data.completedAt,
-      receivedAt: data.receivedAt,
-    };
-  });
-
+  const list = snap.docs.map((d) => petakanDokumen(d.id, d.data()));
   list.sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
   return list;
 }
