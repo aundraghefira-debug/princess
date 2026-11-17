@@ -7,7 +7,7 @@ interface NavbarProps {
   onResetProgress?: () => void;
   activeSection?: string;
   onNavigate?: (
-    page: 'beranda' | 'eksplorasi-ph' | 'kuis' | 'akun' | 'modul_1' | 'modul_2' | 'modul_3'
+    page: 'beranda' | 'eksplorasi-ph' | 'kuis' | 'akun' | 'panel-guru' | 'modul_1' | 'modul_2' | 'modul_3'
   ) => void;
   currentPage?: string;
 }
@@ -27,6 +27,7 @@ export const Navbar: FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [namaAkun, setNamaAkun] = useState<string | null>(null);
+  const [isGuru, setIsGuru] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,17 +47,23 @@ export const Navbar: FC<NavbarProps> = ({
     const berhenti = pantauLogin((user) => {
       if (!user) {
         setNamaAkun(null);
+        setIsGuru(false);
         return;
       }
       setNamaAkun(namaDariAkun(user.displayName, user.email));
-      // Alias dari daftar kelas diutamakan bila ada
+      // Periksa hak akses guru dan alias anggota kelas
       getAccess()
         .then((akses) => {
-          if (aktif && akses.anggota && akses.anggota.alias) {
-            setNamaAkun(akses.anggota.alias);
+          if (aktif) {
+            setIsGuru(Boolean(akses.guru));
+            if (akses.anggota && akses.anggota.alias) {
+              setNamaAkun(akses.anggota.alias);
+            }
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (aktif) setIsGuru(false);
+        });
     });
     return () => {
       aktif = false;
@@ -160,6 +167,19 @@ export const Navbar: FC<NavbarProps> = ({
           >
             Kuis
           </button>
+          {isGuru && (
+            <button
+              type="button"
+              id="nav-panel-guru"
+              className={`nav-link ${currentPage === 'panel-guru' ? 'active' : ''}`}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onNavigate?.('panel-guru');
+              }}
+            >
+              Panel Guru
+            </button>
+          )}
           {!namaAkun && (
             <button
               type="button"
@@ -243,6 +263,18 @@ export const Navbar: FC<NavbarProps> = ({
             >
               📝 Kuis
             </button>
+            {isGuru && (
+              <button
+                type="button"
+                className="mobile-nav-link"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onNavigate?.('panel-guru');
+                }}
+              >
+                👩‍🏫 Panel Guru
+              </button>
+            )}
             <button type="button" className="mobile-nav-link" onClick={bukaAkun}>
               {namaAkun ? `👤 ${namaAkun}` : '👤 Masuk / Daftar'}
             </button>

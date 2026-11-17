@@ -5,10 +5,11 @@ import TopicCards from './TopicCards';
 import ModulDetail from './components/ModulDetail';
 import QuizPage, { type ModeKuis } from './components/QuizPage';
 import AkunPage from './components/AkunPage';
+import PanelGuru from './components/PanelGuru';
 import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
 import './App.css';
 
-export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'akun' |'modul_1' | 'modul_2' | 'modul_3';
+export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'akun' | 'panel-guru' | 'modul_1' | 'modul_2' | 'modul_3';
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
@@ -143,6 +144,9 @@ function App() {
         )}
            {halaman === 'akun' && (
           <AkunPage onNavigate={handleNavigate} />
+        )}
+        {halaman === 'panel-guru' && (
+          <PanelGuru onNavigate={handleNavigate} />
         )}     
       </main>
 
