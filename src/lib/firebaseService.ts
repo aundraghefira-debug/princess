@@ -1,6 +1,6 @@
 // src/lib/firebaseService.ts
 // Layanan login Firebase: Google dan Email/Sandi.
-// Kirim/baca hasil kuis ditambahkan pada tahap berikutnya.
+// Kirim dan baca hasil kuis (attempts) mengikuti kontrak docs/DATABASE.md.
 
 import { initializeApp } from 'firebase/app';
 import {
@@ -17,7 +17,17 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import type { Auth, User } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDocFromServer,
+  setDoc,
+  getDocsFromServer,
+  collection,
+  query,
+  where,
+  serverTimestamp,
+} from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 
 interface Handles {
@@ -53,6 +63,11 @@ export interface AksesAkun {
 
 /** Mengubah kode error Firebase menjadi pesan bahasa Indonesia yang jelas. */
 export function pesanError(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    if (!error.message.startsWith('Firebase:') && !error.message.includes('/')) {
+      return error.message;
+    }
+  }
   const kode = (error as { code?: string })?.code ?? '';
   switch (kode) {
     case 'auth/invalid-email':
@@ -74,7 +89,14 @@ export function pesanError(error: unknown): string {
       return 'Login dibatalkan.';
     case 'auth/popup-blocked':
       return 'Popup diblokir browser. Izinkan popup untuk situs ini.';
+    case 'permission-denied':
+      return 'Akses ditolak. Pastikan akunmu terdaftar di daftar kelas (members/).';
+    case 'unavailable':
+      return 'Layanan cloud tidak dapat dihubungi. Periksa koneksi internet.';
     default:
+      if (error instanceof Error && error.message) {
+        return error.message;
+      }
       return 'Terjadi kesalahan. Coba lagi.';
   }
 }
@@ -152,4 +174,163 @@ export async function getAccess(): Promise<AksesAkun> {
     guru: settings?.data()?.teacherUid === user.uid,
     anggota: dataAnggota ? { alias: dataAnggota.alias ?? '' } : null,
   };
+}
+
+export interface AttemptRecord {
+  id: string;
+  ownerId: string;
+  alias: string;
+  moduleId: string;
+  activityId: string;
+  questionVersion: string;
+  kind: string;
+  answers: Record<string, string>;
+  score: number;
+  completedAt: string;
+  receivedAt?: unknown;
+}
+
+/** Isi percobaan yang dikirim (tanpa receivedAt, karena itu dibuat oleh server). */
+type IsiPercobaan = Omit<AttemptRecord, 'receivedAt'>;
+
+const KUNCI_ISI: (keyof IsiPercobaan)[] = [
+  'id',
+  'ownerId',
+  'alias',
+  'moduleId',
+  'activityId',
+  'questionVersion',
+  'kind',
+  'score',
+  'completedAt',
+];
+
+/** Membandingkan isi dokumen server dengan isi yang akan dikirim. */
+function samaIsi(server: Record<string, unknown>, lokal: IsiPercobaan): boolean {
+  for (const kunci of KUNCI_ISI) {
+    if (server[kunci] !== lokal[kunci]) return false;
+  }
+  const jawabanServer = (server.answers ?? {}) as Record<string, unknown>;
+  const kunciLokal = Object.keys(lokal.answers);
+  if (Object.keys(jawabanServer).length !== kunciLokal.length) return false;
+  return kunciLokal.every((k) => jawabanServer[k] === lokal.answers[k]);
+}
+
+function petakanDokumen(id: string, data: Record<string, unknown>): AttemptRecord {
+  return {
+    id: (data.id as string | undefined) ?? id,
+    ownerId: data.ownerId as string,
+    alias: data.alias as string,
+    moduleId: data.moduleId as string,
+    activityId: data.activityId as string,
+    questionVersion: data.questionVersion as string,
+    kind: data.kind as string,
+    answers: data.answers as Record<string, string>,
+    score: data.score as number,
+    completedAt: data.completedAt as string,
+    receivedAt: data.receivedAt,
+  };
+}
+
+/**
+ * Mengirim hasil kuis ke Firestore koleksi 'attempts'.
+ * - ID percobaan tetap. Jika ID sudah ada di server dengan isi yang SAMA,
+ *   dianggap berhasil tanpa menulis ulang (retry aman, tidak menggandakan data).
+ * - Jika ID sudah ada tetapi isinya berbeda, pengiriman ditolak.
+ * - Berhasil hanya jika server mengonfirmasi dokumen yang sama.
+ * - Hanya akun yang tercantum di members/ yang boleh mengirim.
+ */
+export async function saveAttempt(record: {
+  id: string;
+  moduleId: string;
+  activityId: string;
+  questionVersion: string;
+  kind: string;
+  answers: Record<string, string>;
+  score: number;
+  completedAt: string;
+  alias?: string;
+  ownerId?: string;
+}): Promise<void> {
+  const user = await getIdentity();
+  if (!user) {
+    throw new Error('Kamu harus masuk terlebih dahulu untuk mengirim hasil.');
+  }
+
+  const access = await getAccess();
+  if (!access.anggota) {
+    throw new Error('Hanya akun yang tercantum di daftar kelas (members/) yang boleh mengirim hasil.');
+  }
+
+  const { db } = clients();
+  const ref = doc(db, 'attempts', record.id);
+
+  // Alias harus sama persis dengan alias di members/ (diperiksa oleh Rules)
+  const isi: IsiPercobaan = {
+    id: record.id,
+    ownerId: user.uid,
+    alias: access.anggota.alias,
+    moduleId: record.moduleId,
+    activityId: record.activityId,
+    questionVersion: record.questionVersion,
+    kind: record.kind,
+    answers: record.answers,
+    score: record.score,
+    completedAt: record.completedAt,
+  };
+
+  // 1. Sudah ada di server? Isi sama = sudah terkirim, isi beda = tolak.
+  const sebelum = await getDocFromServer(ref);
+  if (sebelum.exists()) {
+    if (!samaIsi(sebelum.data(), isi)) {
+      throw new Error('ID percobaan ini sudah berisi hasil yang berbeda di server.');
+    }
+    return;
+  }
+
+  // 2. Pastikan akun tidak berganti selama proses
+  if ((await getIdentity())?.uid !== user.uid) {
+    throw new Error('Akun pengirim berubah. Coba kirim lagi.');
+  }
+
+  // 3. Kirim. Jika gagal, periksa apakah pengiriman lain sempat berhasil.
+  try {
+    await setDoc(ref, { ...isi, receivedAt: serverTimestamp() });
+  } catch (error) {
+    const ada = await getDocFromServer(ref).catch(() => null);
+    if (!ada || !ada.exists() || !samaIsi(ada.data(), isi)) throw error;
+  }
+
+  // 4. Konfirmasi dari server
+  const tersimpan = await getDocFromServer(ref);
+  if (!tersimpan.exists() || !samaIsi(tersimpan.data(), isi)) {
+    throw new Error('Penerimaan oleh server belum terkonfirmasi. Coba kirim lagi.');
+  }
+}
+
+/** Mengambil hasil percobaan milik akun yang sedang masuk (langsung dari server). */
+export async function listMine(): Promise<AttemptRecord[]> {
+  const user = await getIdentity();
+  if (!user) return [];
+
+  const { db } = clients();
+  const q = query(collection(db, 'attempts'), where('ownerId', '==', user.uid));
+  const snap = await getDocsFromServer(q);
+
+  const list = snap.docs.map((d) => petakanDokumen(d.id, d.data()));
+  list.sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
+  return list;
+}
+
+/** Mengambil seluruh hasil kelas (hanya guru yang diizinkan oleh Rules). */
+export async function listClass(): Promise<AttemptRecord[]> {
+  const user = await getIdentity();
+  if (!user) return [];
+
+  const { db } = clients();
+  const snap = await getDocsFromServer(collection(db, 'attempts'));
+
+  const list = snap.docs.map((d) => petakanDokumen(d.id, d.data()));
+  list.sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
+  return list;
 }

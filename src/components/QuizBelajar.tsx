@@ -17,6 +17,7 @@ import {
   saveRecord,
 } from '../lib/localStore';
 import type { Draft, QuizRecord } from '../lib/localStore';
+import { KirimHasilKuis } from './KirimHasilKuis';
 import './QuizGabungan.css';
 
 const MODUL_IDS = ['modul_1', 'modul_2', 'modul_3'] as const;
@@ -274,6 +275,8 @@ export function QuizBelajar({ onBukaMateri }: QuizBelajarProps) {
             </button>
           </div>
         )}
+
+        <KirimHasilKuis hasil={hasil} />
 
         <div className="qz-score">
           <div>
