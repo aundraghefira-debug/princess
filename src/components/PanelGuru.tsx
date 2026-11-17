@@ -17,11 +17,15 @@ import {
   hitungRingkasanKelas,
   ekstrakStatusSiswa,
   filterDanUrutSiswa,
+  evaluasiJawabanPerButir,
+  analisisMiskonsepsi,
   MODUL_IDS,
+  MODUL_LABEL,
   BATAS_TUNTAS,
   type ModulId,
   type StatusSiswa,
   type RingkasanKelas,
+  type ItemMiskonsepsi,
 } from '../lib/analisisHasil';
 import './PanelGuru.css';
 
@@ -56,6 +60,40 @@ export const PanelGuru: FC<PanelGuruProps> = ({ onNavigate, onPilihSiswa }) => {
   const [urutBerdasarkan, setUrutBerdasarkan] = useState<'skor' | 'waktu' | 'nama'>('skor');
   const [arahUrutan, setArahUrutan] = useState<'asc' | 'desc'>('desc');
   const [kataKunciCari, setKataKunciCari] = useState('');
+
+  // State untuk Modal Detail Jawaban Siswa per Butir Soal (Tahap 3)
+  const [siswaDetail, setSiswaDetail] = useState<StatusSiswa | null>(null);
+  const [percobaanDipilih, setPercobaanDipilih] = useState<AttemptRecord | null>(null);
+  const [filterModulDetail, setFilterModulDetail] = useState<'semua' | ModulId>('semua');
+  const [filterHanyaSalah, setFilterHanyaSalah] = useState(false);
+
+  // State untuk Analisis Miskonsepsi Tersering (Tahap 3)
+  const [miskonsepsiScope, setMiskonsepsiScope] = useState<'terbaru' | 'semua'>('terbaru');
+  const [miskonsepsiModulFilter, setMiskonsepsiModulFilter] = useState<'semua' | ModulId>('semua');
+
+  const bukaDetailSiswa = (siswa: StatusSiswa) => {
+    setSiswaDetail(siswa);
+    setPercobaanDipilih(siswa.evaluasiTerbaru || siswa.percobaanTerbaru || null);
+    setFilterModulDetail('semua');
+    setFilterHanyaSalah(false);
+    onPilihSiswa?.(siswa);
+  };
+
+  const tutupDetailSiswa = () => {
+    setSiswaDetail(null);
+    setPercobaanDipilih(null);
+  };
+
+  // Tutup modal dengan tombol Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && siswaDetail) {
+        tutupDetailSiswa();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [siswaDetail]);
 
   // 1. Muat akses guru dan data kelas
   useEffect(() => {
@@ -596,7 +634,6 @@ export const PanelGuru: FC<PanelGuruProps> = ({ onNavigate, onPilihSiswa }) => {
                                 <span className="pg-avatar">{avatarLetter}</span>
                                 <div className="pg-siswa-info">
                                   <span className="pg-siswa-name">{siswa.alias}</span>
-                                  <span className="pg-siswa-id">UID: {siswa.ownerId.slice(0, 8)}...</span>
                                 </div>
                               </div>
                             </td>
@@ -658,12 +695,12 @@ export const PanelGuru: FC<PanelGuruProps> = ({ onNavigate, onPilihSiswa }) => {
                               </span>
                             </td>
 
-                            {/* Tombol Aksi Detail (dipersiapkan untuk Tahap 3) */}
+                            {/* Tombol Aksi Detail */}
                             <td style={{ textAlign: 'center' }}>
                               <button
                                 type="button"
                                 className="pg-btn-detail"
-                                onClick={() => onPilihSiswa?.(siswa)}
+                                onClick={() => bukaDetailSiswa(siswa)}
                               >
                                 Detail Jawaban
                               </button>
@@ -676,7 +713,451 @@ export const PanelGuru: FC<PanelGuruProps> = ({ onNavigate, onPilihSiswa }) => {
                 </table>
               </div>
             </section>
+
+            {/* 4. ANALISIS MISKONSEPSI TERSERING */}
+            {(() => {
+              const daftarMiskonsepsiSemua: ItemMiskonsepsi[] = analisisMiskonsepsi(attempts, {
+                hanyaEvaluasiTerbaru: miskonsepsiScope === 'terbaru',
+              });
+
+              const daftarMiskonsepsiTerfilter =
+                miskonsepsiModulFilter === 'semua'
+                  ? daftarMiskonsepsiSemua
+                  : daftarMiskonsepsiSemua.filter((m) => m.modulId === miskonsepsiModulFilter);
+
+              const miskonsepsiAdaSalah = daftarMiskonsepsiTerfilter.filter(
+                (m) => m.jumlahSiswaSalah > 0
+              );
+
+              return (
+                <section className="pg-section-card" aria-labelledby="pg-misconception-title">
+                  <div className="pg-section-header">
+                    <div>
+                      <h2 id="pg-misconception-title">Analisis Miskonsepsi Tersering</h2>
+                      <p>
+                        Daftar konsep materi yang paling banyak dijawab keliru oleh siswa beserta penjelasan miskonsepsinya.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Toolbar Filter Miskonsepsi */}
+                  <div className="pg-filter-bar">
+                    {/* Filter Cakupan Percobaan */}
+                    <div className="pg-mode-tabs" role="tablist" aria-label="Cakupan Data Miskonsepsi">
+                      <button
+                        type="button"
+                        className={`pg-tab-btn ${miskonsepsiScope === 'terbaru' ? 'active' : ''}`}
+                        onClick={() => setMiskonsepsiScope('terbaru')}
+                      >
+                        Evaluasi Terbaru (Default)
+                      </button>
+                      <button
+                        type="button"
+                        className={`pg-tab-btn ${miskonsepsiScope === 'semua' ? 'active' : ''}`}
+                        onClick={() => setMiskonsepsiScope('semua')}
+                      >
+                        Seluruh Percobaan
+                      </button>
+                    </div>
+
+                    {/* Filter Modul Miskonsepsi */}
+                    <div className="pg-mode-tabs" role="tablist" aria-label="Filter Modul Miskonsepsi">
+                      <button
+                        type="button"
+                        className={`pg-tab-btn ${miskonsepsiModulFilter === 'semua' ? 'active' : ''}`}
+                        onClick={() => setMiskonsepsiModulFilter('semua')}
+                      >
+                        Semua Modul
+                      </button>
+                      {(['modul_1', 'modul_2', 'modul_3'] as ModulId[]).map((mid) => (
+                        <button
+                          type="button"
+                          key={mid}
+                          className={`pg-tab-btn ${miskonsepsiModulFilter === mid ? 'active' : ''}`}
+                          onClick={() => setMiskonsepsiModulFilter(mid)}
+                        >
+                          {MODUL_LABEL[mid]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Keterangan Transparan untuk Cakupan Seluruh Percobaan */}
+                  {miskonsepsiScope === 'semua' && (
+                    <div className="pg-notice pg-notice-practice" style={{ margin: '0 0 1.25rem' }}>
+                      ℹ️ <strong>Transparansi Penghitungan:</strong> Pada cakupan <em>Seluruh Percobaan</em>, siswa yang mengulang kuis tetap dihitung sebagai <strong>1 siswa unik</strong> (jika pernah memilih jawaban salah pada butir ini), sehingga persentase mencerminkan proporsi siswa di kelas yang mengalami miskonsepsi, bukan rasio jumlah klik percobaan.
+                    </div>
+                  )}
+
+                  {/* Daftar Kartu Miskonsepsi */}
+                  {miskonsepsiAdaSalah.length === 0 ? (
+                    <div className="pg-empty-misconception">
+                      <div className="pg-empty-icon" aria-hidden="true">🎉</div>
+                      <h3>Tidak Ditemukan Miskonsepsi</h3>
+                      <p>
+                        {miskonsepsiModulFilter === 'semua'
+                          ? 'Seluruh siswa menjawab soal dengan benar pada cakupan ini. Tidak ada indikasi miskonsepsi.'
+                          : `Seluruh siswa menjawab soal ${MODUL_LABEL[miskonsepsiModulFilter]} dengan benar pada cakupan ini.`}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="pg-misconceptions-list">
+                      {miskonsepsiAdaSalah.map((item, idx) => {
+                        const rankClass =
+                          idx === 0
+                            ? 'rank-1'
+                            : idx === 1
+                            ? 'rank-2'
+                            : idx === 2
+                            ? 'rank-3'
+                            : 'rank-other';
+                        return (
+                          <div key={item.soalId} className={`pg-misconception-card ${rankClass}`}>
+                            <div className="pg-misconception-head">
+                              <div className="pg-misconception-rank-badge">
+                                Peringkat #{idx + 1}
+                              </div>
+
+                              <div className="pg-misconception-tags">
+                                <span className="pg-qmodul">{MODUL_LABEL[item.modulId]}</span>
+                                <span className="pg-qconcept">Konsep: {item.konsep}</span>
+                                <span className="pg-qsubmateri">Sub-materi: {item.subMateriId}</span>
+                              </div>
+
+                              <div className="pg-misconception-stat">
+                                <span className="stat-count">
+                                  <strong>{item.jumlahSiswaSalah}</strong> dari {item.totalSiswaTeruji} siswa
+                                </span>
+                                <span className="stat-pct">({item.persentaseSiswaSalah}%)</span>
+                              </div>
+                            </div>
+
+                            {/* Bar Visual Persentase Kesalahan Siswa */}
+                            <div className="pg-pct-bar-wrap" aria-hidden="true">
+                              <div
+                                className="pg-pct-bar-fill"
+                                style={{ width: `${Math.min(item.persentaseSiswaSalah, 100)}%` }}
+                              ></div>
+                            </div>
+
+                            {/* Teks Pertanyaan & Kunci */}
+                            <div className="pg-misconception-question">
+                              <p>
+                                <strong>Pertanyaan:</strong> {item.pertanyaan}
+                              </p>
+                              <div className="pg-misconception-key">
+                                Kunci Jawaban yang Benar: <strong>Opsi {item.jawabanBenar}</strong>
+                              </div>
+                            </div>
+
+                            {/* Distribusi Opsi Salah Siswa */}
+                            {Object.keys(item.distribusiOpsiSalah).length > 0 && (
+                              <div className="pg-misconception-dist">
+                                <span className="dist-title">Pilihan Salah yang Dipilih Siswa:</span>
+                                <div className="dist-pills">
+                                  {Object.entries(item.distribusiOpsiSalah).map(([opsiKey, count]) => (
+                                    <span key={opsiKey} className="dist-pill">
+                                      <strong>Opsi {opsiKey}:</strong> {count} siswa
+                                    </span>
+                                  ))}
+                                  {miskonsepsiScope === 'semua' && (
+                                    <span className="dist-total-info">
+                                      (Total {item.jumlahSalah} kesalahan tercatat)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Kotak Penjelasan Miskonsepsi dari chemData */}
+                            <div className="pg-box-misconception" style={{ marginTop: '0.85rem' }}>
+                              <div className="pg-box-title">
+                                💡 Analisis Miskonsepsi (dari Materi Kimia):
+                              </div>
+                              <p>{item.teksMiskonsepsi}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+              );
+            })()}
           </>
+        )}
+
+        {/* MODAL DETAIL JAWABAN SISWA PER BUTIR SOAL */}
+        {siswaDetail && percobaanDipilih && (
+          <div
+            className="pg-modal-backdrop"
+            onClick={tutupDetailSiswa}
+            role="presentation"
+          >
+            <div
+              className="pg-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="pg-modal-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header Modal */}
+              <div className="pg-modal-header">
+                <div className="pg-modal-header-info">
+                  <span className="pg-modal-avatar" aria-hidden="true">
+                    {(siswaDetail.alias || 'S').charAt(0).toUpperCase()}
+                  </span>
+                  <div>
+                    <h2 id="pg-modal-title" className="pg-modal-title">
+                      {siswaDetail.alias}
+                    </h2>
+                    <div className="pg-modal-badges">
+                      {(['modul_1', 'modul_2', 'modul_3'] as ModulId[]).map((mid) => {
+                        const st = siswaDetail.statusModul[mid];
+                        const skor = siswaDetail.skorPerModulTerbaru[mid];
+                        if (st === 'tuntas') {
+                          return (
+                            <span key={mid} className="pg-badge-modul tuntas">
+                              ✓ {MODUL_LABEL[mid]} Tuntas ({skor})
+                            </span>
+                          );
+                        }
+                        if (st === 'belum_tuntas') {
+                          return (
+                            <span key={mid} className="pg-badge-modul belum-tuntas">
+                              {MODUL_LABEL[mid]} Belum ({skor})
+                            </span>
+                          );
+                        }
+                        return (
+                          <span key={mid} className="pg-badge-modul belum-evaluasi">
+                            {MODUL_LABEL[mid]} Belum Evaluasi
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="pg-modal-btn-close"
+                  onClick={tutupDetailSiswa}
+                  aria-label="Tutup jendela rincian"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Body Modal */}
+              <div className="pg-modal-body">
+                {/* Pemilih Riwayat Percobaan Siswa */}
+                <div className="pg-modal-section pg-attempt-picker">
+                  <div className="pg-attempt-picker-head">
+                    <label htmlFor="pg-select-attempt" className="pg-attempt-label">
+                      Pilih Percobaan Siswa:
+                    </label>
+                    <span className="pg-attempt-total">
+                      Total {siswaDetail.attempts.length} percobaan tercatat
+                    </span>
+                  </div>
+
+                  <select
+                    id="pg-select-attempt"
+                    className="pg-attempt-select"
+                    value={percobaanDipilih.id}
+                    onChange={(e) => {
+                      const found = siswaDetail.attempts.find((a) => a.id === e.target.value);
+                      if (found) setPercobaanDipilih(found);
+                    }}
+                  >
+                    {siswaDetail.attempts.map((att) => {
+                      const isEval = att.kind === 'diagnostic';
+                      const isTerbaru = att.id === siswaDetail.evaluasiTerbaru?.id;
+                      return (
+                        <option key={att.id} value={att.id}>
+                          {isEval ? '🎯 Mode Evaluasi' : '📝 Mode Belajar'} — Skor: {att.score}/100 — {formatWaktuIndonesia(att.completedAt)} {isTerbaru ? '(Evaluasi Terbaru)' : ''}
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  {/* Keterangan Tipe Percobaan */}
+                  {percobaanDipilih.kind === 'practice' ? (
+                    <div className="pg-notice pg-notice-practice">
+                      ℹ️ <strong>Mode Belajar (Latihan):</strong> Percobaan ini merupakan latihan mandiri siswa. Jawaban ditampilkan agar guru dapat memantau proses belajar, namun <em>tidak memengaruhi</em> status ketuntasan resmi modul.
+                    </div>
+                  ) : (
+                    <div className="pg-notice pg-notice-diagnostic">
+                      🎯 <strong>Mode Evaluasi (Diagnostik):</strong> Jawaban dibekukan saat dikirim. Percobaan evaluasi terbaru menentukan skor dan ketuntasan resmi modul siswa.
+                    </div>
+                  )}
+                </div>
+
+                {/* Toolbar Penyaring Butir Soal */}
+                <div className="pg-modal-filter-bar">
+                  <div className="pg-modal-tabs">
+                    <button
+                      type="button"
+                      className={`pg-tab-btn ${filterModulDetail === 'semua' ? 'active' : ''}`}
+                      onClick={() => setFilterModulDetail('semua')}
+                    >
+                      Semua Soal (15)
+                    </button>
+                    {(['modul_1', 'modul_2', 'modul_3'] as ModulId[]).map((mid) => (
+                      <button
+                        type="button"
+                        key={mid}
+                        className={`pg-tab-btn ${filterModulDetail === mid ? 'active' : ''}`}
+                        onClick={() => setFilterModulDetail(mid)}
+                      >
+                        {MODUL_LABEL[mid]}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className="pg-modal-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={filterHanyaSalah}
+                      onChange={(e) => setFilterHanyaSalah(e.target.checked)}
+                    />
+                    <span>Hanya tampilkan jawaban salah</span>
+                  </label>
+                </div>
+
+                {/* Ringkasan Skor Percobaan Terpilih */}
+                {(() => {
+                  const daftarEvaluasi = evaluasiJawabanPerButir(percobaanDipilih.answers || {});
+                  const totalBenar = daftarEvaluasi.filter((d) => d.benar).length;
+                  const totalSalah = daftarEvaluasi.filter((d) => !d.benar).length;
+
+                  let soalDitampilkan = daftarEvaluasi;
+                  if (filterModulDetail !== 'semua') {
+                    soalDitampilkan = soalDitampilkan.filter((d) => d.modulId === filterModulDetail);
+                  }
+                  if (filterHanyaSalah) {
+                    soalDitampilkan = soalDitampilkan.filter((d) => !d.benar);
+                  }
+
+                  return (
+                    <>
+                      <div className="pg-modal-summary-banner">
+                        <div className="pg-summary-banner-stat">
+                          <span className="stat-label">Skor Percobaan</span>
+                          <span className="stat-val">{percobaanDipilih.score}</span>
+                        </div>
+                        <div className="pg-summary-banner-stat">
+                          <span className="stat-label">Jawaban Benar</span>
+                          <span className="stat-val text-green">{totalBenar}</span>
+                        </div>
+                        <div className="pg-summary-banner-stat">
+                          <span className="stat-label">Jawaban Salah</span>
+                          <span className="stat-val text-red">{totalSalah}</span>
+                        </div>
+                        <div className="pg-summary-banner-stat">
+                          <span className="stat-label">Waktu Pengiriman</span>
+                          <span className="stat-time">{formatWaktuIndonesia(percobaanDipilih.completedAt)}</span>
+                        </div>
+                      </div>
+
+                      {/* Daftar Soal */}
+                      <div className="pg-questions-list">
+                        {soalDitampilkan.length === 0 ? (
+                          <div className="pg-questions-empty">
+                            <p>Tidak ada butir soal yang sesuai dengan filter.</p>
+                          </div>
+                        ) : (
+                          soalDitampilkan.map((soal, sIdx) => (
+                            <div
+                              key={soal.soalId}
+                              className={`pg-qcard ${soal.benar ? 'is-benar' : 'is-salah'}`}
+                            >
+                              <div className="pg-qcard-header">
+                                <div className="pg-qcard-tags">
+                                  <span className="pg-qnum">Soal #{sIdx + 1}</span>
+                                  <span className="pg-qmodul">{MODUL_LABEL[soal.modulId]}</span>
+                                  <span className="pg-qconcept">Konsep: {soal.konsep}</span>
+                                </div>
+                                <span className={`pg-status-tag ${soal.benar ? 'benar' : 'salah'}`}>
+                                  {soal.benar ? '✓ Benar' : '✗ Salah'}
+                                </span>
+                              </div>
+
+                              <div className="pg-qcard-question">
+                                <p>{soal.pertanyaan}</p>
+                              </div>
+
+                              {/* Opsi Pilihan */}
+                              <div className="pg-options-grid">
+                                {soal.opsi.map((opsi) => {
+                                  const dipilihSiswa = soal.jawabanSiswa === opsi.id;
+                                  const adalahKunci = soal.kunciJawaban === opsi.id;
+
+                                  let optClass = 'opt-normal';
+                                  if (dipilihSiswa && adalahKunci) optClass = 'opt-student-correct';
+                                  else if (dipilihSiswa && !adalahKunci) optClass = 'opt-student-wrong';
+                                  else if (adalahKunci) optClass = 'opt-key-only';
+
+                                  return (
+                                    <div key={opsi.id} className={`pg-option-item ${optClass}`}>
+                                      <span className="pg-option-badge">{opsi.id}</span>
+                                      <span className="pg-option-text">{opsi.teks}</span>
+
+                                      {dipilihSiswa && adalahKunci && (
+                                        <span className="pg-option-indicator indicator-correct">
+                                          Pilihan Siswa (Benar)
+                                        </span>
+                                      )}
+                                      {dipilihSiswa && !adalahKunci && (
+                                        <span className="pg-option-indicator indicator-wrong">
+                                          Pilihan Siswa (Salah)
+                                        </span>
+                                      )}
+                                      {!dipilihSiswa && adalahKunci && (
+                                        <span className="pg-option-indicator indicator-key">
+                                          Kunci Jawaban
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Pembahasan Soal */}
+                              <div className="pg-box-explanation">
+                                <div className="pg-box-title">📖 Pembahasan:</div>
+                                <p>{soal.pembahasan}</p>
+                              </div>
+
+                              {/* Analisis Miskonsepsi (Hanya Tampil Jika Salah) */}
+                              {!soal.benar && soal.miskonsepsi && (
+                                <div className="pg-box-misconception">
+                                  <div className="pg-box-title">💡 Analisis Miskonsepsi Siswa:</div>
+                                  <p>{soal.miskonsepsi}</p>
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Footer Modal */}
+              <div className="pg-modal-footer">
+                <button
+                  type="button"
+                  className="pg-btn-primary"
+                  onClick={tutupDetailSiswa}
+                >
+                  Tutup Rincian
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

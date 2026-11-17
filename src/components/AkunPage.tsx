@@ -13,9 +13,7 @@ import {
   pesanError,
   saveAttempt,
   listMine,
-  listClass,
   type AksesAkun,
-  type AttemptRecord,
 } from '../lib/firebaseService';
 import { getAllRecords, type QuizRecord } from '../lib/localStore';
 import './AkunPage.css';
@@ -65,7 +63,6 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
 
   // Data riwayat kuis lokal dan cloud
   const [localRecords, setLocalRecords] = useState<QuizRecord[]>([]);
-  const [classAttempts, setClassAttempts] = useState<AttemptRecord[]>([]);
   const [memuatRiwayat, setMemuatRiwayat] = useState(false);
   const [selectedRecordForConfirm, setSelectedRecordForConfirm] = useState<QuizRecord | null>(null);
   const [statusMap, setStatusMap] = useState<
@@ -92,10 +89,6 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
         }
         setStatusMap(newMap);
 
-        if (currentAkses.guru) {
-          const allClass = await listClass();
-          setClassAttempts(allClass);
-        }
       } catch (e) {
         console.error('Gagal memuat riwayat kuis cloud:', e);
       } finally {
@@ -114,7 +107,6 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
         setAkses(null);
         setMemuat(false);
         setLocalRecords([]);
-        setClassAttempts([]);
         return;
       }
       try {
@@ -203,10 +195,6 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
         ...prev,
         [record.id]: { status: 'Terkirim' },
       }));
-      if (akses.guru) {
-        const allClass = await listClass();
-        setClassAttempts(allClass);
-      }
     } catch (e) {
       setStatusMap((prev) => ({
         ...prev,
@@ -446,45 +434,15 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
               )}
             </div>
 
-            {/* Pantauan Kelas untuk Guru */}
+            {/* Tombol Panel Guru hanya untuk akun berstatus Guru */}
             {akses.guru && (
-              <div className="akun-guru-section">
-                <div className="akun-sync-head">
-                  <h3 className="akun-sync-title">Hasil Kuis Seluruh Siswa Kelas</h3>
-                  <span className="akun-sync-count">{classAttempts.length} kiriman</span>
-                </div>
-
-                {classAttempts.length === 0 ? (
-                  <p className="akun-muted">Belum ada siswa yang mengirimkan hasil kuis.</p>
-                ) : (
-                  <div className="akun-guru-table-wrap">
-                    <table className="akun-guru-table">
-                      <thead>
-                        <tr>
-                          <th>Siswa</th>
-                          <th>Aktivitas</th>
-                          <th>Skor</th>
-                          <th>Waktu Selesai</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {classAttempts.map((ca) => (
-                          <tr key={ca.id}>
-                            <td>
-                              <strong>{ca.alias || 'Tanpa alias'}</strong>
-                            </td>
-                            <td>{formatAktivitas(ca)}</td>
-                            <td>
-                              <span className="akun-table-skor">{ca.score}</span>
-                            </td>
-                            <td>{formatWaktu(ca.completedAt)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                className="akun-btn akun-btn-primary"
+                onClick={() => onNavigate('panel-guru')}
+              >
+                Buka Panel Guru
+              </button>
             )}
 
             <button
