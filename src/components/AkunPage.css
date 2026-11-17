@@ -320,3 +320,269 @@
   background: var(--pink-soft);
   color: #9d174d;
 }
+
+/* Tampilan akun ketika masuk (dapat melebar untuk daftar kuis) */
+.akun-card.is-logged-in {
+  max-width: 640px;
+}
+
+/* Konfirmasi Pengiriman Modal / Card */
+.akun-confirm-card {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 1rem 0 1.25rem;
+  padding: 1.1rem;
+  background: #fdf4ff;
+  border: 1.5px solid var(--pink);
+  border-radius: 14px;
+  text-align: left;
+}
+
+.akun-confirm-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ungu);
+}
+
+.akun-confirm-info {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--teks);
+  line-height: 1.5;
+}
+
+.akun-confirm-target {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--garis);
+  font-size: 0.86rem;
+  color: var(--teks);
+}
+
+.akun-confirm-alert {
+  margin: 0.5rem 0 0.85rem;
+  padding: 0.6rem 0.8rem;
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.akun-confirm-btns {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.akun-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* Bagian Sinkronisasi Hasil Kuis */
+.akun-sync-section {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 1.25rem 0 1.5rem;
+  text-align: left;
+}
+
+.akun-sync-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.akun-sync-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--teks);
+}
+
+.akun-sync-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ungu);
+  background: var(--lavender);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+.akun-sync-sub {
+  margin: 0 0 1rem;
+  font-size: 0.86rem;
+  color: var(--teks-redup);
+}
+
+.akun-sync-empty {
+  padding: 1.25rem;
+  background: var(--lavender);
+  border-radius: 12px;
+  color: var(--teks-redup);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Daftar Record Kuis */
+.akun-record-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.akun-record-item {
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+  border: 1px solid var(--garis);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.04);
+  transition: border-color 0.2s;
+}
+
+.akun-record-item:hover {
+  border-color: #cbd5e1;
+}
+
+.akun-record-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.akun-record-nama {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--teks);
+}
+
+.akun-record-meta {
+  font-size: 0.84rem;
+  color: var(--teks-redup);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.akun-record-error {
+  margin: 0.4rem 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #f87171;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.akun-record-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.akun-btn-pilih {
+  background: var(--ungu);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.akun-btn-pilih:hover:not(:disabled) {
+  background: #6d28d9;
+}
+
+.akun-btn-pilih:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.akun-btn-pilih.is-retry {
+  background: #dc2626;
+}
+
+.akun-btn-pilih.is-retry:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.akun-record-sending {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.akun-record-done {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* Pantauan Hasil Guru */
+.akun-guru-section {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.akun-guru-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--garis);
+  margin-top: 0.75rem;
+}
+
+.akun-guru-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.akun-guru-table th,
+.akun-guru-table td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--garis);
+}
+
+.akun-guru-table th {
+  background: var(--lavender);
+  color: var(--teks-redup);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.akun-table-skor {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 6px;
+  font-weight: 700;
+}

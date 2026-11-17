@@ -1,0 +1,194 @@
+/* src/components/KirimHasilKuis.css */
+
+.khk-box {
+  margin: 1.25rem 0;
+  padding: 1.1rem;
+  border-radius: 10px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+.khk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.khk-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.status-badge.is-lokal {
+  background: #334155;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.status-badge.is-menunggu {
+  background: #1e3a8a;
+  color: #93c5fd;
+  border: 1px solid #3b82f6;
+  animation: khk-pulse 1.5s infinite;
+}
+
+.status-badge.is-terkirim {
+  background: #064e3b;
+  color: #6ee7b7;
+  border: 1px solid #10b981;
+}
+
+.status-badge.is-gagal {
+  background: #7f1d1d;
+  color: #fca5a5;
+  border: 1px solid #ef4444;
+}
+
+@keyframes khk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.khk-desc {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin: 0 0 0.8rem 0;
+  line-height: 1.45;
+}
+
+.khk-error-detail {
+  margin: 0.5rem 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: #450a0a;
+  border: 1px solid #991b1b;
+  color: #fecaca;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.khk-error-detail strong {
+  color: #f87171;
+}
+
+/* Modal / Konfirmasi Panel */
+.khk-confirm-panel {
+  margin-top: 0.8rem;
+  padding: 1rem;
+  background: #0f172a;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+}
+
+.khk-confirm-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #38bdf8;
+  margin: 0 0 0.5rem 0;
+}
+
+.khk-confirm-meta {
+  font-size: 0.86rem;
+  color: #cbd5e1;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.5;
+}
+
+.khk-confirm-warning {
+  margin: 0.6rem 0 0.9rem 0;
+  padding: 0.65rem 0.85rem;
+  background: #422006;
+  border: 1px solid #d97706;
+  border-radius: 6px;
+  color: #fde68a;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.khk-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.khk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.khk-btn-primary {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.khk-btn-primary:hover:not(:disabled) {
+  background: #0369a1;
+}
+
+.khk-btn-primary:disabled {
+  background: #475569;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.khk-btn-ghost {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.khk-btn-ghost:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.khk-btn-retry {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.khk-btn-retry:hover {
+  background: #991b1b;
+}
+
+.khk-success-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6ee7b7;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
