@@ -104,6 +104,7 @@
 .brand-highlight {
   background: linear-gradient(135deg, var(--acid-cyan-light), var(--base-magenta));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -363,6 +364,7 @@
 .text-gradient-cyan {
   background: linear-gradient(135deg, #38bdf8 0%, #06b6d4 50%, #2dd4bf 100%);
   -webkit-background-clip: text;
+  background-clip: text; 
   -webkit-text-fill-color: transparent;
 }
 
