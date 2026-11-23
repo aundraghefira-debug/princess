@@ -586,3 +586,17 @@
   border-radius: 6px;
   font-weight: 700;
 }
+
+
+/* Light theme for account and teacher dashboard */
+.akun-page, .akun-container, .akun-card, .akun-content,
+.panel-guru, .panel-guru-container, .panel-guru-card,
+.pg-card, .pg-section, .pg-table-wrapper {
+  background-color: #fff !important;
+  color: #30213b !important;
+  border-color: #eadcf1 !important;
+}
+.akun-page h1, .akun-page h2, .akun-page h3,
+.panel-guru h1, .panel-guru h2, .panel-guru h3,
+.panel-guru strong { color: #382346 !important; }
+.akun-page p, .panel-guru p, .panel-guru label { color: #5f506b !important; }

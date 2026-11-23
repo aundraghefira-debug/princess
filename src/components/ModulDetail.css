@@ -7,7 +7,7 @@
   max-width: 980px;
   margin: 0 auto;
   padding: 2rem 1.5rem 5rem;
-  color: var(--text-main, #f1f5f9);
+  color: var(--text-main, #302044);
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
@@ -43,11 +43,11 @@
 }
 
 .btn-back-home:hover {
-  background: rgba(6, 182, 212, 0.15);
-  border-color: rgba(6, 182, 212, 0.5);
-  color: #38bdf8;
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #c084fc;
   transform: translateX(-3px);
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
 }
 
 .modul-status-actions {
@@ -72,9 +72,9 @@
 }
 
 .btn-status-toggle.completed {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #34d399;
+  background: rgba(5, 150, 105, 0.12);
+  border-color: rgba(5, 150, 105, 0.4);
+  color: #065f46;
 }
 
 .btn-status-toggle:hover {
@@ -87,7 +87,7 @@
    -------------------------------------------------------------------------- */
 .modul-hero-header {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(7, 10, 19, 0.9));
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 20px;
   padding: 2.25rem 2rem;
   position: relative;
@@ -102,7 +102,7 @@
   right: -20%;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(40px);
 }
@@ -122,9 +122,9 @@
   letter-spacing: 0.05em;
   padding: 0.3rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #38bdf8;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #c084fc;
 }
 
 .fase-tag-pill {
@@ -148,7 +148,7 @@
 
 .modul-hero-desc {
   font-size: 1.05rem;
-  color: #cbd5e1;
+  color: #302044;
   margin: 0 0 1.5rem;
   line-height: 1.6;
   max-width: 780px;
@@ -177,16 +177,16 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #cbd5e1;
+  color: #302044;
   text-decoration: none;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .quick-nav-link:hover {
-  background: rgba(6, 182, 212, 0.2);
-  border-color: rgba(6, 182, 212, 0.4);
-  color: #38bdf8;
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
   transform: translateY(-1px);
 }
 
@@ -194,7 +194,7 @@
    03. Generic Section Blocks
    -------------------------------------------------------------------------- */
 .modul-section-block {
-  background: rgba(15, 23, 42, 0.55);
+  background: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   padding: 2rem;
@@ -215,9 +215,9 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #38bdf8;
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.25);
   padding: 0.35rem 0.85rem;
   border-radius: 9999px;
   margin-bottom: 1.25rem;
@@ -243,8 +243,8 @@
   align-items: center;
   gap: 0.5rem;
   background: transparent;
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #38bdf8;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #c084fc;
   padding: 0.5rem 1.15rem;
   border-radius: 8px;
   font-size: 0.88rem;
@@ -254,8 +254,8 @@
 }
 
 .btn-outline-next:hover {
-  background: rgba(6, 182, 212, 0.15);
-  border-color: rgba(6, 182, 212, 0.6);
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.6);
   transform: translateY(-2px);
 }
 
@@ -310,8 +310,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
+  background: rgba(5, 150, 105, 0.15);
+  color: #065f46;
   font-size: 0.8rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -335,7 +335,7 @@
 }
 
 .apersepsi-story {
-  color: #cbd5e1;
+  color: #302044;
   font-size: 1.02rem;
   line-height: 1.7;
 }
@@ -358,7 +358,7 @@
 .apersepsi-subheading {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #c084fc;
   margin: 0 0 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -383,18 +383,18 @@
 }
 
 .q-number {
-  color: #38bdf8;
+  color: #c084fc;
   font-weight: 700;
   flex-shrink: 0;
 }
 
 /* Kotak Berwarna Kalimat Kaitan (Requirement 2) */
 .apersepsi-kaitan-box {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.1));
-  border: 1.5px solid rgba(6, 182, 212, 0.4);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(16, 185, 129, 0.1));
+  border: 1.5px solid rgba(168, 85, 247, 0.4);
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 6px 20px -5px rgba(6, 182, 212, 0.15);
+  box-shadow: 0 6px 20px -5px rgba(168, 85, 247, 0.15);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -409,7 +409,7 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(180deg, #06b6d4, #10b981);
+  background: linear-gradient(180deg, #a855f7, #10b981);
 }
 
 .kaitan-box-header {
@@ -418,7 +418,7 @@
   gap: 0.5rem;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #c084fc;
 }
 
 .kaitan-icon {
@@ -466,9 +466,9 @@
   font-weight: 700;
   padding: 0.25rem 0.65rem;
   border-radius: 6px;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  color: #38bdf8;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
 }
 
 .submateri-title {
@@ -487,7 +487,7 @@
 
 .submateri-penjelasan-text {
   font-size: 1.02rem;
-  color: #cbd5e1;
+  color: #302044;
   line-height: 1.7;
   margin: 0;
 }
@@ -495,7 +495,7 @@
 /* 2. Persamaan Reaksi */
 .submateri-reaction-box {
   background: rgba(7, 10, 19, 0.7);
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.25);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -508,7 +508,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #38bdf8;
+  color: #c084fc;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -522,8 +522,8 @@
 }
 
 .reaction-code-pill {
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
   padding: 0.45rem 0.95rem;
   border-radius: 8px;
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
@@ -608,7 +608,7 @@
   box-shadow: 0 4px 18px -4px rgba(16, 185, 129, 0.2);
 }
 .card-makro .johnstone-card-title {
-  color: #34d399;
+  color: #065f46;
 }
 
 /* Submikroskopis - Magenta */
@@ -625,14 +625,14 @@
 
 /* Simbolik - Cyan */
 .card-simbolik {
-  border-color: rgba(6, 182, 212, 0.25);
+  border-color: rgba(168, 85, 247, 0.25);
 }
 .card-simbolik:hover {
-  border-color: rgba(6, 182, 212, 0.5);
-  box-shadow: 0 4px 18px -4px rgba(6, 182, 212, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 4px 18px -4px rgba(168, 85, 247, 0.2);
 }
 .card-simbolik .johnstone-card-title {
-  color: #38bdf8;
+  color: #c084fc;
 }
 
 .johnstone-card-header {
@@ -654,7 +654,7 @@
 
 .johnstone-card-content {
   font-size: 0.9rem;
-  color: #cbd5e1;
+  color: #302044;
   line-height: 1.55;
   margin: 0;
 }
@@ -719,7 +719,7 @@
 .cs-steps-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #c084fc;
   text-transform: uppercase;
   margin: 0 0 0.65rem;
 }
@@ -730,7 +730,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  color: #cbd5e1;
+  color: #302044;
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -748,7 +748,7 @@
 .cs-answer-badge {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #34d399;
+  color: #065f46;
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -756,7 +756,7 @@
 .cs-answer-text {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #ecfdf5;
+  color: #302044;
   margin: 0;
 }
 
@@ -792,7 +792,7 @@
 }
 
 .ringkasan-bullet {
-  color: #38bdf8;
+  color: #c084fc;
   font-weight: 700;
 }
 
@@ -816,7 +816,7 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 0.85rem 1.15rem;
   border-radius: 10px;
-  color: #cbd5e1;
+  color: #302044;
   font-size: 0.92rem;
   line-height: 1.5;
 }
@@ -857,7 +857,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
   border: none;
   color: #ffffff;
   padding: 0.65rem 1.35rem;
@@ -866,12 +866,12 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
 }
 
 .btn-primary-action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
 }
 
 /* --------------------------------------------------------------------------
@@ -920,3 +920,92 @@
     justify-content: center;
   }
 }
+
+
+/* Light theme for learning module */
+.modul-detail-container { color: #30213b !important; }
+.modul-top-bar { border-bottom-color: #eadcf1 !important; }
+.btn-back-home, .btn-status-toggle, .quick-nav-link,
+.tujuan-item, .apersepsi-questions-group, .cs-steps-box,
+.ringkasan-point-item, .sumber-item {
+  background: #fff !important;
+  color: #51415e !important;
+  border-color: #eadcf1 !important;
+}
+.modul-hero-header, .submateri-card, .submateri-reaction-box,
+.johnstone-col-card, .contoh-soal-card, .pending-content,
+.apersepsi-kaitan-box, .keterbatasan-box, .cs-answer-box {
+  background-color: #fff !important;
+  color: #30213b !important;
+  border-color: #eadcf1 !important;
+  box-shadow: 0 8px 24px rgba(83, 43, 100, 0.07) !important;
+}
+.modul-detail-container h1, .modul-detail-container h2,
+.modul-detail-container h3, .modul-detail-container h4,
+.modul-detail-container strong { color: #382346 !important; }
+.modul-detail-container p, .modul-detail-container li,
+.modul-detail-container label { color: #5f506b !important; }
+.reaction-code-pill { background: #f5eaff !important; color: #54256f !important; }
+.btn-primary-action { background: linear-gradient(110deg, #873bd0, #d9468f) !important; color: #fff !important; }
+
+
+/* CONTRAST FIX: exact ModulDetail selectors */
+.modul-detail-container,
+.modul-detail-container .apersepsi-content-card,
+.modul-detail-container .apersepsi-story,
+.modul-detail-container .apersepsi-kaitan-box,
+.modul-detail-container .modul-hero-header,
+.modul-detail-container .submateri-card,
+.modul-detail-container .submateri-penjelasan-box,
+.modul-detail-container .contoh-soal-card {
+  color: #30213b !important;
+}
+.modul-detail-container .apersepsi-content-card,
+.modul-detail-container .apersepsi-kaitan-box,
+.modul-detail-container .modul-hero-header,
+.modul-detail-container .submateri-card,
+.modul-detail-container .submateri-penjelasan-box,
+.modul-detail-container .contoh-soal-card {
+  background: #ffffff !important;
+  border-color: #eadcf1 !important;
+}
+.modul-detail-container .apersepsi-heading,
+.modul-detail-container .apersepsi-story,
+.modul-detail-container .apersepsi-numbered-list,
+.modul-detail-container .apersepsi-q-item,
+.modul-detail-container .apersepsi-kaitan-box,
+.modul-detail-container .apersepsi-kaitan-box *,
+.modul-detail-container .modul-hero-title,
+.modul-detail-container .modul-hero-desc,
+.modul-detail-container .submateri-title,
+.modul-detail-container .submateri-penjelasan-text {
+  color: #493255 !important;
+  opacity: 1 !important;
+}
+.modul-detail-container .apersepsi-subheading,
+.modul-detail-container .section-title-badge,
+.modul-detail-container .submateri-section-label {
+  color: #8b35b5 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Styling Khusus Section Praktikum Titrasi (Modul 3)
+   -------------------------------------------------------------------------- */
+#praktikum-titrasi.modul-section-block {
+  padding: 1.5rem;
+  background: #FFFFFF !important;
+  border: 1px solid #E8D9F5 !important;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(113, 55, 184, 0.08) !important;
+  max-width: 100%;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  #praktikum-titrasi.modul-section-block {
+    padding: 1rem 0.65rem;
+    border-radius: 14px;
+  }
+}
+

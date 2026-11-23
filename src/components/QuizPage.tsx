@@ -28,8 +28,8 @@ const QuizPage = ({ onNavigate, onBukaMateri, modeAwal = null }: QuizPageProps) 
   const [mode, setMode] = useState<ModeKuis>(modeAwal);
 
   return (
-    <div style={{ maxWidth: '980px', margin: '1.5rem auto', padding: '0 1.5rem' }}>
-      <button type="button" style={tombolGaya} onClick={() => onNavigate('beranda')}>
+    <div className="quiz-page-container" style={{ maxWidth: '980px', margin: '1.5rem auto', padding: '0 1.5rem' }}>
+      <button type="button" className="quiz-page-back-button" style={tombolGaya} onClick={() => onNavigate('beranda')}>
         ← Kembali ke Beranda
       </button>
 
@@ -39,10 +39,10 @@ const QuizPage = ({ onNavigate, onBukaMateri, modeAwal = null }: QuizPageProps) 
         <>
           <p>Pilih mode kuis:</p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button type="button" style={tombolGaya} onClick={() => setMode('evaluasi')}>
+            <button type="button" className="quiz-page-mode-button" style={tombolGaya} onClick={() => setMode('evaluasi')}>
               Mode Evaluasi
             </button>
-            <button type="button" style={tombolGaya} onClick={() => setMode('belajar')}>
+            <button type="button" className="quiz-page-mode-button" style={tombolGaya} onClick={() => setMode('belajar')}>
               Mode Belajar
             </button>
           </div>
