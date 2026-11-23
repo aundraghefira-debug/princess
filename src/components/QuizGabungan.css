@@ -4,7 +4,7 @@
    ========================================================================== */
 
 .qz-section {
-  background: rgba(15, 23, 42, 0.55);
+  background: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   padding: 2rem;
@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  color: #e2e8f0;
+  color: #302044;
 }
 
 .qz-badge {
@@ -36,7 +36,7 @@
 }
 
 .qz-card {
-  background: rgba(7, 10, 19, 0.6);
+  background: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 1.5rem;
@@ -52,9 +52,9 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #38bdf8;
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
   padding: 0.25rem 0.7rem;
   border-radius: 9999px;
 }
@@ -90,7 +90,7 @@
 .qz-btn:focus-visible,
 .qz-step:focus-visible,
 .qz-option:focus-within {
-  outline: 2px solid #38bdf8;
+  outline: 2px solid #c084fc;
   outline-offset: 2px;
 }
 
@@ -101,9 +101,9 @@
 
 .qz-btn-primary {
   align-self: flex-start;
-  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
 }
 
 .qz-btn-primary:hover {
@@ -113,11 +113,11 @@
 .qz-btn-ghost {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
+  color: #302044;
 }
 
 .qz-btn-ghost:hover:not(:disabled) {
-  border-color: rgba(6, 182, 212, 0.5);
+  border-color: rgba(168, 85, 247, 0.5);
 }
 
 .qz-btn-exit {
@@ -130,8 +130,8 @@
 .qz-btn-small {
   padding: 0.4rem 0.9rem;
   font-size: 0.85rem;
-  background: rgba(6, 182, 212, 0.15);
-  border-color: rgba(6, 182, 212, 0.4);
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
   color: #e0f2fe;
 }
 
@@ -164,27 +164,27 @@
 }
 
 .qz-alert-info {
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  color: #bae6fd;
+  background: rgba(113, 55, 184, 0.08);
+  border: 1px solid rgba(113, 55, 184, 0.25);
+  color: #302044;
 }
 
 .qz-alert-success {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #a7f3d0;
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  color: #065f46;
 }
 
 .qz-alert-warning {
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fde68a;
+  color: #713f12;
 }
 
 .qz-alert-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fecaca;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #991b1b;
 }
 
 .qz-inline-actions {
@@ -201,7 +201,7 @@
   z-index: 1000;
   background: #070a13;
   overflow-y: auto;
-  color: #e2e8f0;
+  color: #302044;
 }
 
 .qz-overlay-inner {
@@ -253,7 +253,7 @@
 }
 
 .qz-save-tersimpan {
-  color: #34d399;
+  color: #065f46;
 }
 
 .qz-save-gagal,
@@ -280,13 +280,13 @@
 }
 
 .qz-step.is-terjawab {
-  border-color: rgba(16, 185, 129, 0.5);
-  color: #6ee7b7;
+  border-color: #10b981;
+  color: #065f46;
 }
 
 .qz-step.is-aktif {
-  background: #0284c7;
-  border-color: #38bdf8;
+  background: #7c3aed;
+  border-color: #c084fc;
   color: #ffffff;
 }
 
@@ -299,7 +299,7 @@
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.6;
-  color: #f8fafc;
+  color: #302044;
   margin: 0 0 0.25rem;
   padding: 0;
 }
@@ -323,17 +323,17 @@
 }
 
 .qz-option:hover {
-  border-color: rgba(6, 182, 212, 0.4);
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
 .qz-option.is-dipilih {
-  border-color: #38bdf8;
-  background: rgba(6, 182, 212, 0.12);
+  border-color: #c084fc;
+  background: rgba(168, 85, 247, 0.12);
 }
 
 .qz-option input {
   margin-top: 0.25rem;
-  accent-color: #38bdf8;
+  accent-color: #c084fc;
   width: 1.05rem;
   height: 1.05rem;
   flex-shrink: 0;
@@ -354,7 +354,7 @@
 }
 
 .qz-option.is-dipilih .qz-key {
-  background: #0284c7;
+  background: #7c3aed;
   color: #ffffff;
 }
 
@@ -362,7 +362,7 @@
   flex: 1;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: #e2e8f0;
+  color: #302044;
 }
 
 .qz-nav {
@@ -397,22 +397,22 @@
   flex-wrap: wrap;
   padding: 1.5rem;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.08));
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 
 .qz-score-text {
   margin: 0.6rem 0 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #302044;
 }
 
 .qz-score-circle {
   width: 6rem;
   height: 6rem;
   border-radius: 50%;
-  border: 4px solid #38bdf8;
+  border: 4px solid #c084fc;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -423,7 +423,7 @@
 .qz-score-number {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #38bdf8;
+  color: #c084fc;
   line-height: 1;
 }
 
@@ -444,7 +444,7 @@
 }
 
 .qz-review {
-  background: rgba(7, 10, 19, 0.6);
+  background: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-left-width: 5px;
   border-radius: 12px;
@@ -468,7 +468,7 @@
   align-items: center;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: #665A73;
 }
 
 .qz-tag {
@@ -478,13 +478,13 @@
 }
 
 .qz-tag-benar {
-  background: rgba(16, 185, 129, 0.15);
-  color: #6ee7b7;
+  background: rgba(5, 150, 105, 0.12);
+  color: #065f46;
 }
 
 .qz-tag-salah {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
 }
 
 .qz-review-options {
@@ -502,19 +502,22 @@
   gap: 0.65rem;
   padding: 0.6rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #E8D9F5;
+  background: #FAF7FF;
   flex-wrap: wrap;
+  color: #302044;
 }
 
 .qz-review-option.is-kunci {
-  border-color: rgba(16, 185, 129, 0.5);
-  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  background: rgba(5, 150, 105, 0.08);
+  color: #065f46;
 }
 
 .qz-review-option.is-pilihan-salah {
-  border-color: rgba(239, 68, 68, 0.5);
-  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  color: #991b1b;
 }
 
 .qz-note {
@@ -534,13 +537,13 @@
 }
 
 .qz-explain {
-  background: rgba(6, 182, 212, 0.08);
-  color: #e0f2fe;
+  background: #EDE9FE;
+  color: #302044;
 }
 
 .qz-misconception {
-  background: rgba(245, 158, 11, 0.08);
-  color: #fde68a;
+  background: #FEF9C3;
+  color: #713F12;
 }
 
 .qz-actions {
@@ -571,3 +574,40 @@
     text-align: center;
   }
 }
+
+/* Light theme for quiz and review */
+.qz-section, .qz-card, .qz-review, .qz-score-circle {
+  background: #FFFFFF !important;
+  color: #302044 !important;
+  border-color: #E8D9F5 !important;
+  box-shadow: 0 10px 30px rgba(113, 55, 184, 0.07) !important;
+}
+.qz-heading, .qz-section h1, .qz-section h2, .qz-section h3 { color: #302044 !important; }
+.qz-section p, .qz-section label, .qz-rules { color: #665A73 !important; }
+.qz-option, .qz-review-option, .qz-step, .qz-key {
+  background: #FAF7FF !important;
+  color: #302044 !important;
+  border-color: #E8D9F5 !important;
+}
+.qz-option.is-dipilih { background: #F3E8FF !important; color: #7137B8 !important; border-color: #9B5DE5 !important; }
+.qz-step.is-aktif { background: #7137B8 !important; color: #FFFFFF !important; }
+.qz-explain { background: #F3E8FF !important; color: #302044 !important; }
+.qz-btn-ghost { background: #FFFFFF !important; color: #665A73 !important; border-color: #E8D9F5 !important; }
+
+
+/* Quiz mode controls and text */
+.quiz-page-container { color: #302044 !important; }
+.quiz-page-container h1 { color: #302044 !important; }
+.quiz-page-container p, .quiz-page-container li { color: #665A73 !important; }
+.quiz-page-back-button {
+  background: #FFFFFF !important;
+  color: #7137B8 !important;
+  border: 1px solid #D8BFEF !important;
+}
+.quiz-page-mode-button {
+  background: linear-gradient(110deg, #7137B8, #9B5DE5) !important;
+  color: #FFFFFF !important;
+  border: 1px solid #7137B8 !important;
+}
+.quiz-page-back-button:hover { background: #F3E8FF !important; }
+.quiz-page-mode-button:hover { filter: brightness(1.04); }

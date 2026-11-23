@@ -1,0 +1,1386 @@
+/* src/components/PanelGuru.css */
+/* Tema warna ChemiVerse: Pink-Putih-Ungu */
+
+.pg-wrap {
+  --pink: #ec4899;
+  --pink-soft: #fce7f3;
+  --ungu: #7c3aed;
+  --ungu-gelap: #5b21b6;
+  --lavender: #f5f0ff;
+  --teks: #3b2a57;
+  --teks-redup: #6b5b86;
+  --garis: #e4d9f5;
+  --hijau: #16a34a;
+  --hijau-bg: #dcfce7;
+  --oranye: #d97706;
+  --oranye-bg: #fef3c7;
+  --merah: #dc2626;
+  --merah-bg: #fee2e2;
+
+  min-height: calc(100vh - 80px);
+  padding: 2rem 1.5rem 4rem;
+  background: linear-gradient(135deg, #fdf2f8 0%, #f5f0ff 55%, #ede9fe 100%);
+  color: var(--teks);
+  font-family: inherit;
+}
+
+.pg-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Navigasi Atas & Tombol Kembali */
+.pg-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pg-btn-back {
+  background: none;
+  border: none;
+  color: var(--ungu);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pg-btn-back:hover {
+  background: rgba(124, 58, 237, 0.08);
+  text-decoration: underline;
+}
+
+.pg-btn-refresh {
+  background: #ffffff;
+  color: var(--ungu);
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.45rem 1rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.06);
+  transition: all 0.2s;
+}
+
+.pg-btn-refresh:hover:not(:disabled) {
+  background: var(--lavender);
+  border-color: var(--ungu);
+}
+
+.pg-btn-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Header Panel Guru */
+.pg-header {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
+  border: 1px solid var(--garis);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pg-header-text h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--teks);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pg-header-text p {
+  margin: 0;
+  color: var(--teks-redup);
+  font-size: 0.95rem;
+}
+
+.pg-guru-badge {
+  background: linear-gradient(135deg, var(--pink), var(--ungu));
+  color: #ffffff;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* Status Cards & State Tampilan */
+.pg-state-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
+  border: 1px solid var(--garis);
+  margin-bottom: 2rem;
+}
+
+.pg-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.pg-state-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+  color: var(--teks);
+}
+
+.pg-state-card p {
+  margin: 0 0 1.5rem;
+  color: var(--teks-redup);
+  font-size: 0.95rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pg-btn-primary {
+  background: linear-gradient(135deg, var(--pink), var(--ungu));
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1.6rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.25);
+}
+
+.pg-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.35);
+}
+
+/* Spinner */
+.pg-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--lavender);
+  border-top-color: var(--ungu);
+  border-radius: 50%;
+  animation: pg-spin 0.9s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+
+@keyframes pg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Grid Kartu Ringkasan */
+.pg-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.pg-summary-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.4rem 1.35rem;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.06);
+  border: 1px solid var(--garis);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.pg-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pink), var(--ungu));
+}
+
+.pg-card-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--teks-redup);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+}
+
+.pg-card-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--teks);
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
+}
+
+.pg-card-sub {
+  font-size: 0.82rem;
+  color: var(--teks-redup);
+  margin: 0;
+}
+
+.pg-module-pass-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.pg-module-pass-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.84rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  background: var(--lavender);
+}
+
+.pg-module-pass-item strong {
+  color: var(--ungu-gelap);
+}
+
+.pg-module-pass-pct {
+  font-weight: 700;
+  color: var(--teks);
+}
+
+/* Bagian Grafik Batang */
+.pg-section-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
+  border: 1px solid var(--garis);
+}
+
+.pg-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.pg-section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--teks);
+}
+
+.pg-section-header p {
+  margin: 0.2rem 0 0;
+  color: var(--teks-redup);
+  font-size: 0.88rem;
+}
+
+/* Wadah Grafik Batang SVG Mandiri */
+.pg-chart-container {
+  width: 100%;
+  margin: 1rem 0 0.5rem;
+  background: #faf8ff;
+  border-radius: 14px;
+  padding: 1.25rem 1rem 0.75rem;
+  border: 1px solid var(--garis);
+}
+
+.pg-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 320px;
+}
+
+.pg-chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  color: var(--teks-redup);
+  flex-wrap: wrap;
+}
+
+.pg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pg-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.pg-legend-dot.tuntas {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.pg-legend-dot.belum {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.pg-legend-line {
+  width: 20px;
+  height: 2px;
+  border-top: 2px dashed #7c3aed;
+}
+
+/* Toolbar Filter & Pencarian Daftar Siswa */
+.pg-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--lavender);
+  border-radius: 14px;
+}
+
+.pg-mode-tabs {
+  display: flex;
+  gap: 0.4rem;
+  background: #ffffff;
+  padding: 0.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--garis);
+}
+
+.pg-tab-btn {
+  background: none;
+  border: none;
+  padding: 0.45rem 0.85rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teks-redup);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pg-tab-btn.active {
+  background: var(--ungu);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+.pg-filter-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pg-search-input {
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--teks);
+  background: #ffffff;
+  outline: none;
+  width: 180px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pg-search-input:focus {
+  border-color: var(--ungu);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.pg-sort-select {
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--teks);
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.pg-btn-arah {
+  background: #ffffff;
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ungu);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pg-btn-arah:hover {
+  background: var(--pink-soft);
+}
+
+/* Tabel Siswa */
+.pg-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--garis);
+  background: #ffffff;
+}
+
+.pg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.pg-table th {
+  background: #f8f6fc;
+  color: var(--teks-redup);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid var(--garis);
+  white-space: nowrap;
+}
+
+.pg-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--garis);
+  vertical-align: middle;
+}
+
+.pg-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pg-table tr:hover td {
+  background: #faf8ff;
+}
+
+/* Baris Siswa */
+.pg-siswa-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pg-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink-soft), var(--lavender));
+  color: var(--ungu);
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  border: 1px solid var(--garis);
+  flex-shrink: 0;
+}
+
+.pg-siswa-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-siswa-name {
+  font-weight: 700;
+  color: var(--teks);
+}
+
+.pg-siswa-id {
+  font-size: 0.75rem;
+  color: var(--teks-redup);
+}
+
+/* Skor Badge */
+.pg-score-pill {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  background: var(--lavender);
+  color: var(--ungu);
+  border: 1px solid var(--garis);
+}
+
+.pg-score-pill.is-empty {
+  color: var(--teks-redup);
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* Lencana Modul */
+.pg-badge-modul {
+  display: inline-block;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pg-badge-modul.tuntas {
+  background: var(--hijau-bg);
+  color: var(--hijau);
+}
+
+.pg-badge-modul.belum-tuntas {
+  background: var(--oranye-bg);
+  color: var(--oranye);
+}
+
+.pg-badge-modul.belum-evaluasi {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Waktu & Riwayat */
+.pg-time-cell {
+  font-size: 0.8rem;
+  color: var(--teks-redup);
+  white-space: nowrap;
+}
+
+.pg-attempts-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #f3f4f6;
+  color: #4b5563;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  margin-top: 0.2rem;
+}
+
+/* Tombol Detail Siswa (disiapkan untuk Tahap 3) */
+.pg-btn-detail {
+  background: #ffffff;
+  color: var(--ungu);
+  border: 1px solid var(--garis);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.pg-btn-detail:hover {
+  background: var(--ungu);
+  color: #ffffff;
+  border-color: var(--ungu);
+}
+
+/* ==========================================================================
+   MODAL DETAIL JAWABAN SISWA PER BUTIR SOAL (Tahap 3)
+   ========================================================================== */
+
+.pg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 42, 87, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.pg-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 860px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(124, 58, 237, 0.25);
+  border: 1px solid var(--garis);
+  animation: pgModalFadeIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+@keyframes pgModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pg-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--garis);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.pg-modal-header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.pg-modal-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--ungu));
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+  flex-shrink: 0;
+}
+
+.pg-modal-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--teks);
+}
+
+.pg-modal-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pg-modal-btn-close {
+  background: none;
+  border: none;
+  font-size: 1.35rem;
+  color: var(--teks-redup);
+  cursor: pointer;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+
+.pg-modal-btn-close:hover {
+  background: var(--lavender);
+  color: var(--ungu);
+}
+
+.pg-modal-body {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Pemilih Riwayat Percobaan Siswa */
+.pg-attempt-picker {
+  background: var(--lavender);
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--garis);
+}
+
+.pg-attempt-picker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pg-attempt-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ungu-gelap);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.pg-attempt-total {
+  font-size: 0.8rem;
+  color: var(--teks-redup);
+  font-weight: 600;
+}
+
+.pg-attempt-select {
+  width: 100%;
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--teks);
+  background: #ffffff;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 0.6rem;
+  transition: border-color 0.2s;
+}
+
+.pg-attempt-select:focus {
+  border-color: var(--ungu);
+}
+
+.pg-notice {
+  font-size: 0.83rem;
+  line-height: 1.5;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+}
+
+.pg-notice-practice {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.pg-notice-diagnostic {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Toolbar Filter Modal */
+.pg-modal-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--garis);
+}
+
+.pg-modal-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.pg-modal-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teks-redup);
+  cursor: pointer;
+}
+
+/* Banner Ringkasan Skor Percobaan */
+.pg-modal-summary-banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.85rem;
+  background: #ffffff;
+  border: 1px solid var(--garis);
+  border-radius: 14px;
+  padding: 0.9rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.04);
+}
+
+.pg-summary-banner-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-summary-banner-stat .stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--teks-redup);
+  letter-spacing: 0.4px;
+  margin-bottom: 0.2rem;
+}
+
+.pg-summary-banner-stat .stat-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--teks);
+}
+
+.stat-val.text-green {
+  color: var(--hijau);
+}
+
+.stat-val.text-red {
+  color: var(--merah);
+}
+
+.stat-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teks);
+  margin-top: 0.35rem;
+}
+
+/* Daftar Soal Modal */
+.pg-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pg-questions-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  background: #faf8ff;
+  border-radius: 12px;
+  color: var(--teks-redup);
+  font-size: 0.92rem;
+}
+
+.pg-qcard {
+  background: #ffffff;
+  border: 1px solid var(--garis);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.04);
+}
+
+.pg-qcard.is-benar {
+  border-left: 5px solid var(--hijau);
+}
+
+.pg-qcard.is-salah {
+  border-left: 5px solid var(--merah);
+}
+
+.pg-qcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pg-qcard-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pg-qnum {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--teks);
+}
+
+.pg-qmodul {
+  background: var(--lavender);
+  color: var(--ungu-gelap);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.pg-qconcept {
+  font-size: 0.78rem;
+  color: var(--teks-redup);
+  font-weight: 600;
+}
+
+.pg-status-tag {
+  padding: 0.22rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pg-status-tag.benar {
+  background: var(--hijau-bg);
+  color: var(--hijau);
+}
+
+.pg-status-tag.salah {
+  background: var(--merah-bg);
+  color: var(--merah);
+}
+
+.pg-qcard-question p {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--teks);
+  font-weight: 600;
+}
+
+/* Opsi Soal di Modal */
+.pg-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pg-option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--garis);
+  font-size: 0.88rem;
+  background: #ffffff;
+}
+
+.pg-option-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 700;
+  font-size: 0.78rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.pg-option-text {
+  flex: 1;
+  color: var(--teks);
+}
+
+.pg-option-item.opt-student-correct {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.pg-option-item.opt-student-correct .pg-option-badge {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.pg-option-item.opt-student-wrong {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.pg-option-item.opt-student-wrong .pg-option-badge {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.pg-option-item.opt-key-only {
+  background: #f0fdf4;
+  border: 1.5px dashed #16a34a;
+  color: #166534;
+}
+
+.pg-option-item.opt-key-only .pg-option-badge {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.pg-option-indicator {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.indicator-correct {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.indicator-wrong {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.indicator-key {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Pembahasan & Miskonsepsi Box */
+.pg-box-explanation {
+  background: var(--lavender);
+  border: 1px solid var(--garis);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--teks);
+  margin-bottom: 0.75rem;
+}
+
+.pg-box-explanation p,
+.pg-box-misconception p {
+  margin: 0;
+}
+
+.pg-box-misconception {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #92400e;
+}
+
+.pg-box-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.pg-modal-footer {
+  padding: 1rem 1.75rem;
+  border-top: 1px solid var(--garis);
+  display: flex;
+  justify-content: flex-end;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+/* Responsif Mobile Modal */
+@media (max-width: 768px) {
+  .pg-modal {
+    max-height: 95vh;
+  }
+
+  .pg-modal-header,
+  .pg-modal-body,
+  .pg-modal-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .pg-modal-header-info {
+    flex-direction: row;
+  }
+
+  .pg-modal-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pg-option-item {
+    flex-wrap: wrap;
+  }
+
+  .pg-option-indicator {
+    width: 100%;
+    margin-top: 0.35rem;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   ANALISIS MISKONSEPSI TERSERING (Tahap 3)
+   ========================================================================== */
+
+.pg-misconceptions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pg-misconception-card {
+  background: #ffffff;
+  border: 1px solid var(--garis);
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.05);
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.pg-misconception-card:hover {
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.1);
+}
+
+.pg-misconception-card.rank-1 {
+  border-left: 6px solid #dc2626;
+}
+
+.pg-misconception-card.rank-2 {
+  border-left: 6px solid #ea580c;
+}
+
+.pg-misconception-card.rank-3 {
+  border-left: 6px solid #f59e0b;
+}
+
+.pg-misconception-card.rank-other {
+  border-left: 6px solid var(--ungu);
+}
+
+.pg-misconception-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.pg-misconception-rank-badge {
+  background: linear-gradient(135deg, var(--pink), var(--ungu));
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+}
+
+.pg-misconception-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pg-qsubmateri {
+  font-size: 0.78rem;
+  color: var(--teks-redup);
+  font-weight: 600;
+  background: #f1f5f9;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.pg-misconception-stat {
+  font-size: 0.9rem;
+  color: var(--teks);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pg-misconception-stat .stat-count strong {
+  color: #dc2626;
+  font-size: 1.05rem;
+}
+
+.pg-misconception-stat .stat-pct {
+  font-weight: 800;
+  color: #dc2626;
+}
+
+/* Bar Visual Persentase Kesalahan */
+.pg-pct-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: #ede9fe;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.5rem 0 0.85rem;
+}
+
+.pg-pct-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #dc2626);
+  border-radius: 999px;
+  transition: width 0.4s ease-out;
+}
+
+.pg-misconception-question {
+  margin-bottom: 0.75rem;
+}
+
+.pg-misconception-question p {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--teks);
+}
+
+.pg-misconception-key {
+  font-size: 0.85rem;
+  color: #166534;
+  background: #dcfce7;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* Distribusi Opsi Salah Siswa */
+.pg-misconception-dist {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+}
+
+.dist-title {
+  font-weight: 700;
+  color: var(--teks-redup);
+}
+
+.dist-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.dist-pill {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.dist-total-info {
+  font-size: 0.8rem;
+  color: var(--teks-redup);
+  margin-left: 0.25rem;
+}
+
+/* State Kosong Miskonsepsi */
+.pg-empty-misconception {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #faf8ff;
+  border-radius: 16px;
+  border: 1px solid var(--garis);
+}
+
+.pg-empty-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.pg-empty-misconception h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+  color: var(--teks);
+}
+
+.pg-empty-misconception p {
+  margin: 0;
+  color: var(--teks-redup);
+  font-size: 0.92rem;
+}
+
+/* Responsif Mobile */
+@media (max-width: 768px) {
+  .pg-wrap {
+    padding: 1.25rem 0.75rem 3rem;
+  }
+
+  .pg-header {
+    padding: 1.25rem 1rem;
+  }
+
+  .pg-header-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .pg-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pg-section-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .pg-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pg-mode-tabs {
+    overflow-x: auto;
+  }
+
+  .pg-filter-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pg-search-input {
+    width: 100%;
+  }
+}
+
+
+
+/* Light theme for account and teacher dashboard */
+.akun-page, .akun-container, .akun-card, .akun-content,
+.panel-guru, .panel-guru-container, .panel-guru-card,
+.pg-card, .pg-section, .pg-table-wrapper {
+  background-color: #fff !important;
+  color: #30213b !important;
+  border-color: #eadcf1 !important;
+}
+.akun-page h1, .akun-page h2, .akun-page h3,
+.panel-guru h1, .panel-guru h2, .panel-guru h3,
+.panel-guru strong { color: #382346 !important; }
+.akun-page p, .panel-guru p, .panel-guru label { color: #5f506b !important; }

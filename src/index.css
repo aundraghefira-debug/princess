@@ -1,37 +1,66 @@
+/* ==========================================================================
+   ChemiVerse: Asam Basa Interactive Lab - Global Stylesheet
+   Theme: Light Pink-Lavender / Purple Modern Scientific Lab
+   ========================================================================== */
+
 :root {
-  --bg-primary: #070a13;
-  --bg-secondary: #0d1527;
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --bg-card-hover: rgba(23, 37, 68, 0.88);
-  --bg-glass: rgba(255, 255, 255, 0.04);
+  /* Surface & Background Colors */
+  --bg-primary: #F8F5FF;
+  --bg-secondary: #F0E8FF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FAF7FF;
+  --bg-glass: rgba(255, 255, 255, 0.92);
+
+  /* Primary Palette */
+  --primary-purple: #7137B8;
+  --accent-purple: #9B5DE5;
+  --primary-purple-light: #F3E8FF;
+  --primary-purple-dark: #53248E;
+
+  /* Accent & Acid/Base Semantic Colors */
+  --acid-cyan: #7137B8;
+  --acid-cyan-light: #9B5DE5;
+  --acid-glow: rgba(113, 55, 184, 0.16);
   
-  --border-subtle: rgba(255, 255, 255, 0.09);
-  --border-highlight: rgba(255, 255, 255, 0.16);
-  
-  --acid-cyan: #06b6d4;
-  --acid-cyan-light: #67e8f9;
-  --acid-glow: rgba(6, 182, 212, 0.3);
-  
-  --base-magenta: #d946ef;
-  --base-pink-light: #f472b6;
-  --base-glow: rgba(217, 70, 239, 0.3);
-  
-  --neutral-emerald: #10b981;
-  --neutral-glow: rgba(16, 185, 129, 0.3);
-  
-  --amber-gold: #f59e0b;
-  --amber-glow: rgba(245, 158, 11, 0.3);
-  
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  
+  --base-magenta: #EC4899;
+  --base-pink-light: #FCE7F3;
+  --base-glow: rgba(236, 72, 153, 0.16);
+
+  /* Functional Status Colors */
+  --neutral-emerald: #10B981;
+  --neutral-emerald-bg: #DCFCE7;
+  --neutral-emerald-text: #166534;
+  --neutral-glow: rgba(16, 185, 129, 0.2);
+
+  --amber-gold: #F59E0B;
+  --amber-gold-bg: #FEF3C7;
+  --amber-gold-text: #92400E;
+  --amber-glow: rgba(245, 158, 11, 0.2);
+
+  --error-red: #EF4444;
+  --error-red-bg: #FEE2E2;
+  --error-red-text: #991B1B;
+
+  /* Typography & High-Contrast Text */
+  --text-main: #302044;
+  --text-muted: #665A73;
+  --text-dim: #877B96;
+
+  /* Borders & Dividers */
+  --border-subtle: #E8D9F5;
+  --border-highlight: #D8BFEF;
+
+  /* Typography Fonts */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  
-  --shadow-card: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
-  --shadow-glow-cyan: 0 0 35px -8px rgba(6, 182, 212, 0.35);
-  --shadow-glow-magenta: 0 0 35px -8px rgba(217, 70, 239, 0.35);
+
+  /* Shadows */
+  --shadow-card: 0 10px 30px rgba(113, 55, 184, 0.08);
+  --shadow-card-hover: 0 16px 40px rgba(113, 55, 184, 0.14);
+  --shadow-glow-cyan: 0 8px 24px rgba(113, 55, 184, 0.18);
+  --shadow-glow-magenta: 0 8px 24px rgba(236, 72, 153, 0.18);
+
+  /* Radius */
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
@@ -59,10 +88,9 @@ body {
   min-height: 100vh;
   min-width: 360px;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 85% 25%, rgba(217, 70, 239, 0.1) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
-    var(--bg-primary);
+    radial-gradient(circle at 12% 8%, rgba(221, 183, 255, 0.28), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(255, 196, 224, 0.28), transparent 34%),
+    linear-gradient(180deg, #F8F5FF 0%, #F4EEFF 50%, #FAF6FF 100%);
   background-attachment: fixed;
   color: var(--text-main);
   overflow-x: hidden;
@@ -123,14 +151,20 @@ sub {
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #D8BFEF;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--acid-cyan);
+  background: var(--primary-purple);
+}
+
+.app-wrapper, .main-content {
+  background: transparent;
+  color: var(--text-main);
 }

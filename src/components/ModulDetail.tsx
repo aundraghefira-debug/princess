@@ -1,6 +1,7 @@
 import React from 'react';
 import { modules, kuisPerModul, type Modul, type SubMateri } from '../data/chemData';
 import { type ChemiVerseState } from '../types';
+import TitrationLab from './titration/TitrationLab';
 import './ModulDetail.css';
 
 export interface ModulDetailProps {
@@ -70,6 +71,24 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
   // Cek apakah modul ini punya soal di kuisPerModul
   const normalizedForKuis = moduleId.replace('-', '_') as keyof typeof kuisPerModul;
   const hasKuis = Boolean(kuisPerModul[normalizedForKuis]?.soal?.length);
+
+  // Penanda khusus untuk Modul 3 (Titrasi Asam Basa)
+  const isModul3 = moduleId === 'modul_3' || moduleId === 'modul-3';
+
+  // Checkpoint Titrasi dari userState
+  const initialVolumeTitran = isModul3
+    ? Math.max(0, 50 - (userState?.titration_checkpoint?.v_buret_left ?? 50))
+    : 0;
+
+  const handleTitrationVolumeChange = (_volTitran: number, volBuretLeft: number) => {
+    if (!userState || !onUpdateUserState) return;
+    onUpdateUserState({
+      ...userState,
+      titration_checkpoint: {
+        v_buret_left: volBuretLeft,
+      },
+    });
+  };
 
     if (!modul) {
     return (
@@ -231,6 +250,11 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <button type="button" className="quick-nav-link" onClick={() => scrollToSection('sub-materi')}>
             3. Sub-Materi
           </button>
+          {isModul3 && (
+            <button type="button" className="quick-nav-link" onClick={() => scrollToSection('praktikum-titrasi')}>
+              Simulasi Titrasi
+            </button>
+          )}
           <button type="button" className="quick-nav-link" onClick={() => scrollToSection('contoh-soal')}>
             4. Contoh Soal
           </button>
@@ -493,13 +517,40 @@ export const ModulDetail: React.FC<ModulDetailProps> = ({
           <button
             type="button"
             className="btn-outline-next"
-            onClick={() => scrollToSection('contoh-soal')}
+            onClick={() => scrollToSection(isModul3 ? 'praktikum-titrasi' : 'contoh-soal')}
           >
-            <span>Lanjut ke Contoh Soal</span>
+            <span>{isModul3 ? 'Lanjut ke Praktikum Titrasi' : 'Lanjut ke Contoh Soal'}</span>
             <span>↓</span>
           </button>
         </div>
       </section>
+
+      {/* ----------------------------------------------------------------------
+         LABORATORIUM VIRTUAL TITRASI ASAM BASA (Khusus Modul 3)
+         ---------------------------------------------------------------------- */}
+      {isModul3 && (
+        <section id="praktikum-titrasi" className="modul-section-block">
+          <div className="section-title-badge">
+            <span>🧪 Bagian Interaktif: Laboratorium Virtual</span>
+          </div>
+          <h2 className="section-main-heading">Praktikum Virtual Titrasi Asam Basa</h2>
+          <TitrationLab
+            initialVolumeTitran={initialVolumeTitran}
+            onVolumeTitranChange={handleTitrationVolumeChange}
+          />
+
+          <div className="section-next-action">
+            <button
+              type="button"
+              className="btn-outline-next"
+              onClick={() => scrollToSection('contoh-soal')}
+            >
+              <span>Lanjut ke Contoh Soal</span>
+              <span>↓</span>
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* ----------------------------------------------------------------------
          URUTAN 4: Contoh Soal (USER_FLOW.md Bagian 3)
