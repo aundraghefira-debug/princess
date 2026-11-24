@@ -1,6 +1,7 @@
 // src/components/QuizGabungan.tsx
 // Kuis gabungan Modul 1-3, Mode Evaluasi (kind: "diagnostic")
 // Skor per modul dihitung dari jawaban; ambang tuntas 60.
+// AD08-04: focus trap, Escape, dan pengembalian fokus ke tombol pemicu.
 
 import { useEffect, useRef, useState } from 'react';
 import { kuisPerModul } from '../data/chemData';
@@ -51,6 +52,9 @@ function skorPerModul(answers: Record<string, string>) {
   });
 }
 
+const FOCUSABLE =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 interface QuizGabunganProps {
   onSelesai?: () => void;
 }
@@ -71,6 +75,9 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
   const [konfirmasiKeluar, setKonfirmasiKeluar] = useState(false);
 
   const judulRef = useRef<HTMLHeadingElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const tombolPemicuRef = useRef<HTMLButtonElement | null>(null);
+  const pernahMengerjakanRef = useRef(false);
 
   // Baca draf dan hasil terakhir saat dibuka (termasuk setelah refresh)
   useEffect(() => {
@@ -89,15 +96,95 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
     setHasilTerakhir(diagnostik[0] ?? null);
   }, []);
 
-  // Saat mengerjakan: kunci scroll belakang dan fokus ke judul
+  // Saat mengerjakan: kunci scroll, fokus ke judul, sembunyikan area belakang
   useEffect(() => {
     if (fase !== 'mengerjakan') return;
+    pernahMengerjakanRef.current = true;
     const overflowLama = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     judulRef.current?.focus();
+
+    // Area di belakang dialog tidak bisa dijangkau keyboard / pembaca layar
+    const overlay = overlayRef.current;
+    const disembunyikan: { el: HTMLElement; inert: boolean; aria: string | null }[] = [];
+    let node: HTMLElement | null = overlay;
+    while (node && node !== document.body) {
+      const induk: HTMLElement | null = node.parentElement;
+      if (induk) {
+        Array.from(induk.children).forEach((saudara) => {
+          if (saudara !== node && saudara instanceof HTMLElement) {
+            disembunyikan.push({
+              el: saudara,
+              inert: saudara.inert,
+              aria: saudara.getAttribute('aria-hidden'),
+            });
+            saudara.inert = true;
+            saudara.setAttribute('aria-hidden', 'true');
+          }
+        });
+      }
+      node = induk;
+    }
+
     return () => {
       document.body.style.overflow = overflowLama;
+      disembunyikan.forEach(({ el, inert, aria }) => {
+        el.inert = inert;
+        if (aria === null) el.removeAttribute('aria-hidden');
+        else el.setAttribute('aria-hidden', aria);
+      });
     };
+  }, [fase]);
+
+  // Kembalikan fokus ke tombol pemicu setelah dialog ditutup
+  useEffect(() => {
+    if (fase === 'mengerjakan') return;
+    if (!pernahMengerjakanRef.current) return;
+    pernahMengerjakanRef.current = false;
+    const t = window.setTimeout(() => {
+      if (tombolPemicuRef.current && document.contains(tombolPemicuRef.current)) {
+        tombolPemicuRef.current.focus();
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [fase]);
+
+  // Focus trap (Tab / Shift+Tab) dan Escape saat dialog aktif
+  useEffect(() => {
+    if (fase !== 'mengerjakan') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        // Escape membuka konfirmasi keluar; bila sudah terbuka, menutupnya (batal)
+        setKonfirmasiKeluar((v) => !v);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const overlay = overlayRef.current;
+      if (!overlay) return;
+      const daftar = Array.from(overlay.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (daftar.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const pertama = daftar[0];
+      const terakhir = daftar[daftar.length - 1];
+      const aktif = document.activeElement as HTMLElement | null;
+      const didalam = aktif ? overlay.contains(aktif) : false;
+      if (e.shiftKey) {
+        if (!didalam || aktif === pertama || aktif === judulRef.current) {
+          e.preventDefault();
+          terakhir.focus();
+        }
+      } else if (!didalam || aktif === terakhir) {
+        e.preventDefault();
+        pertama.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
   }, [fase]);
 
   const soalList = SOAL_LIST;
@@ -247,7 +334,12 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
               : 'Belum ada hasil evaluasi.'}
           </p>
 
-          <button type="button" className="qz-btn qz-btn-primary" onClick={mulaiEvaluasi}>
+          <button
+            type="button"
+            className="qz-btn qz-btn-primary"
+            ref={tombolPemicuRef}
+            onClick={mulaiEvaluasi}
+          >
             {draf ? 'Lanjutkan Evaluasi' : 'Mulai Evaluasi'}
           </button>
         </div>
@@ -348,7 +440,12 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
         </ol>
 
         <div className="qz-actions">
-          <button type="button" className="qz-btn qz-btn-primary" onClick={ulangiEvaluasi}>
+          <button
+            type="button"
+            className="qz-btn qz-btn-primary"
+            ref={tombolPemicuRef}
+            onClick={ulangiEvaluasi}
+          >
             Ulangi Evaluasi
           </button>
         </div>
@@ -360,7 +457,13 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
   const soal = soalList[nomorAktif];
 
   return (
-    <div className="qz-overlay" role="dialog" aria-modal="true" aria-labelledby="qz-judul-aktif">
+    <div
+      className="qz-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="qz-judul-aktif"
+      ref={overlayRef}
+    >
       <div className="qz-overlay-inner">
         <header className="qz-active-head">
           <div className="qz-active-info">
@@ -397,6 +500,7 @@ export function QuizGabungan({ onSelesai }: QuizGabunganProps) {
               <button
                 type="button"
                 className="qz-btn qz-btn-small qz-btn-ghost"
+                autoFocus
                 onClick={() => setKonfirmasiKeluar(false)}
               >
                 Batal

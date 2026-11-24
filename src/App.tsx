@@ -7,9 +7,32 @@ import QuizPage, { type ModeKuis } from './components/QuizPage';
 import AkunPage from './components/AkunPage';
 import PanelGuru from './components/PanelGuru';
 import { loadUserState, saveUserState, DEFAULT_USER_STATE, type ChemiVerseState } from './types';
+import { resetModuleProgress, resetAllDrafts, resetAllRecords } from './lib/localStore';
 import './App.css';
-
 export type Halaman = 'beranda' | 'eksplorasi-ph' | 'kuis' | 'akun' | 'panel-guru' | 'modul_1' | 'modul_2' | 'modul_3';
+
+type ResetJenis = 'progres' | 'draf' | 'riwayat';
+
+const TEKS_KONFIRMASI: Record<ResetJenis, { judul: string; isi: string }> = {
+  progres: {
+    judul: 'Reset progres modul?',
+    isi: 'Tanda "selesai" pada Modul 1-3 akan dihapus. Draf kuis dan riwayat hasil kuis TIDAK dihapus.',
+  },
+  draf: {
+    judul: 'Hapus semua draf kuis?',
+    isi: 'Jawaban kuis yang belum dikirim akan dihapus. Progres modul dan riwayat hasil kuis TIDAK dihapus.',
+  },
+  riwayat: {
+    judul: 'Hapus riwayat hasil kuis?',
+    isi: 'Semua hasil kuis yang sudah selesai di perangkat ini akan dihapus. Progres modul dan draf kuis TIDAK dihapus.',
+  },
+};
+
+const OPSI_RESET: { jenis: ResetJenis; label: string }[] = [
+  { jenis: 'progres', label: '🔄 Reset progres modul' },
+  { jenis: 'draf', label: '📝 Hapus semua draf kuis' },
+  { jenis: 'riwayat', label: '🗑️ Hapus riwayat hasil kuis' },
+];
 
 function App() {
   const [userState, setUserState] = useState<ChemiVerseState>(loadUserState);
@@ -18,6 +41,11 @@ function App() {
   const [subTujuan, setSubTujuan] = useState<string | null>(null);
   const [dariKuisBelajar, setDariKuisBelajar] = useState(false);
   const [modeKuisAwal, setModeKuisAwal] = useState<ModeKuis>(null);
+
+  // Reset progres (AD08-03): tiga reset terpisah
+  const [menuData, setMenuData] = useState(false);
+  const [konfirmasi, setKonfirmasi] = useState<ResetJenis | null>(null);
+  const [pesanReset, setPesanReset] = useState<{ ok: boolean; teks: string } | null>(null);
 
   // Sync state dengan LocalStorage bila ada perubahan
   useEffect(() => {
@@ -40,6 +68,18 @@ function App() {
     }, 150);
     return () => window.clearTimeout(timer);
   }, [halaman, subTujuan]);
+
+  // Escape: kembali dari konfirmasi, atau tutup dialog
+  useEffect(() => {
+    if (!menuData) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (konfirmasi) setKonfirmasi(null);
+      else setMenuData(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuData, konfirmasi]);
 
   const handleNavigate = (targetHalaman: Halaman) => {
     setDariKuisBelajar(false);
@@ -69,11 +109,32 @@ function App() {
     }
   };
 
+  // Tombol dari Navbar: buka dialog Reset Progres
   const handleResetProgress = () => {
-    if (window.confirm('Apakah Anda yakin ingin mengatur ulang seluruh data progres belajar lokal?')) {
+    setPesanReset(null);
+    setKonfirmasi(null);
+    setMenuData(true);
+  };
+
+  const jalankanReset = () => {
+    if (!konfirmasi) return;
+    let hasil: { success: boolean; error?: string };
+    if (konfirmasi === 'progres') {
+      // Penyimpanan lama (_chemiverse_user_state) + penyimpanan baru (chem:chemiverse:v1)
       setUserState(DEFAULT_USER_STATE);
       saveUserState(DEFAULT_USER_STATE);
+      hasil = resetModuleProgress();
+    } else if (konfirmasi === 'draf') {
+      hasil = resetAllDrafts();
+    } else {
+      hasil = resetAllRecords();
     }
+    setPesanReset(
+      hasil.success
+        ? { ok: true, teks: 'Data berhasil dihapus.' }
+        : { ok: false, teks: hasil.error ?? 'Gagal menghapus data.' }
+    );
+    setKonfirmasi(null);
   };
 
   return (
@@ -142,12 +203,12 @@ function App() {
             modeAwal={modeKuisAwal}
           />
         )}
-           {halaman === 'akun' && (
+        {halaman === 'akun' && (
           <AkunPage onNavigate={handleNavigate} />
         )}
         {halaman === 'panel-guru' && (
           <PanelGuru onNavigate={handleNavigate} />
-        )}     
+        )}
       </main>
 
       {/* 04. Footer Edukasi Sains */}
@@ -219,6 +280,71 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Dialog Reset Progres: tiga tindakan reset terpisah (AD08-03) */}
+      {menuData && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Reset progres"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(46, 16, 101, 0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}
+        >
+          <div style={{ background: '#f5f0ff', border: '1px solid #c4b5fd', borderRadius: 16, padding: '1.5rem', maxWidth: 440, width: '100%', color: '#2e1065', boxShadow: '0 20px 50px rgba(91, 33, 182, 0.25)' }}>
+            {konfirmasi ? (
+              <>
+                <h3 style={{ marginTop: 0, color: '#2e1065' }}>{TEKS_KONFIRMASI[konfirmasi].judul}</h3>
+                <p style={{ color: '#3b0764' }}>{TEKS_KONFIRMASI[konfirmasi].isi}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    autoFocus
+                    onClick={() => setKonfirmasi(null)}
+                    style={{ padding: '0.55rem 1rem', borderRadius: 10, border: '1px solid #a78bfa', background: '#ede9fe', color: '#5b21b6', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={jalankanReset}
+                    style={{ padding: '0.55rem 1rem', borderRadius: 10, border: 'none', background: '#dc2626', color: '#ffffff', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Ya, hapus
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 style={{ marginTop: 0, color: '#2e1065' }}>Reset Progres</h3>
+                <p style={{ color: '#4c1d95' }}>Pilih data yang ingin dihapus. Setiap tombol hanya menghapus satu jenis data.</p>
+                {pesanReset && (
+                  <p role="status" style={{ color: pesanReset.ok ? '#15803d' : '#b91c1c', fontWeight: 600 }}>
+                    {pesanReset.teks}
+                  </p>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {OPSI_RESET.map((item) => (
+                    <button
+                      key={item.jenis}
+                      type="button"
+                      onClick={() => setKonfirmasi(item.jenis)}
+                      style={{ padding: '0.7rem 1rem', borderRadius: 10, border: '1px solid #a78bfa', background: '#ede9fe', color: '#4c1d95', fontWeight: 600, textAlign: 'left', cursor: 'pointer' }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setMenuData(false)}
+                    style={{ padding: '0.7rem 1rem', borderRadius: 10, border: '1px solid #c4b5fd', background: '#ffffff', color: '#5b21b6', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

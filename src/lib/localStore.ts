@@ -102,7 +102,7 @@ export type StrukturPenyimpanan = ChemiVerseStorage;
 // STATUS & RESULT TYPES
 // ============================================================================
 
-export type StorageWriteStatus = 'berhasil' | 'gagal' | 'rusak';
+export type StorageWriteStatus = 'berhasil' | 'gagal' | 'rusak' | 'konflik' | 'duplikat';
 export type StorageReadStatus = 'berhasil' | 'kosong' | 'rusak' | 'gagal';
 
 export interface StorageWriteResult {
@@ -619,7 +619,14 @@ export const removeDraft = deleteDraft;
 /**
  * Menyimpan hasil kuis/percobaan (Record).
  * Disimpan saat siswa menekan tombol Kirim.
- * Record yang sudah disimpan dibekukan (tidak diubah lagi).
+ *
+ * Kebijakan ID (AD08-02):
+ * - ID baru          → simpan langsung.
+ * - ID sama, isi identik → terima tanpa perubahan (idempoten; aman untuk pengiriman ulang).
+ * - ID sama, isi berbeda → TOLAK; kembalikan status 'konflik'. Record lama tidak diubah.
+ *
+ * "Identik" diperiksa dengan JSON.stringify atas field substantif
+ * (answers, correctCount, totalQuestions, score, startedAt, completedAt).
  */
 export function saveRecord(record: QuizRecord, scope: string = DEFAULT_SCOPE): StorageWriteResult {
   if (!record || typeof record !== 'object' || !record.id) {
@@ -657,6 +664,38 @@ export function saveRecord(record: QuizRecord, scope: string = DEFAULT_SCOPE): S
     status: 'local',
     completedAt: record.completedAt || new Date().toISOString(),
   };
+
+  // --- AD08-02: Conflict guard ---
+  const existing = scopeObj.records[recordToSave.id];
+  if (existing) {
+    // Bandingkan field substantif (timestamp completedAt diabaikan agar idempoten)
+    const substantiveFields = (r: QuizRecord) =>
+      JSON.stringify({
+        answers: r.answers,
+        correctCount: r.correctCount,
+        totalQuestions: r.totalQuestions,
+        score: r.score,
+        moduleId: r.moduleId,
+        activityId: r.activityId,
+        questionVersion: r.questionVersion,
+        kind: r.kind,
+      });
+
+    if (substantiveFields(existing) === substantiveFields(recordToSave)) {
+      // Isi identik → idempoten, terima tanpa menulis ulang
+      return {
+        success: true,
+        status: 'duplikat',
+      };
+    }
+
+    // Isi berbeda → konflik; tolak; jangan ubah record lama
+    return {
+      success: false,
+      status: 'konflik',
+      error: `Record dengan ID "${recordToSave.id}" sudah ada dan isinya berbeda. Percobaan baru harus menggunakan ID baru (generateSessionId()).`,
+    };
+  }
 
   scopeObj.records[recordToSave.id] = recordToSave;
 
@@ -923,4 +962,93 @@ export function clearAllData(): StorageWriteResult {
 }
 export const clearChemiVerseStorage = clearAllData;
 export const removeChemiVerseData = clearAllData;
+
+// ============================================================================
+// 7. RESET GRANULAR — AD08-03
+// ============================================================================
+
+/**
+ * Mereset hanya progres modul (completedModules) pada scope 'guest'.
+ * Draf kuis dan riwayat hasil tidak tersentuh.
+ * Juga menghapus key lama '_chemiverse_user_state' (progres modul & titrasi)
+ * menggunakan removeItem (bukan clear).
+ */
+export function resetModuleProgress(scope: string = DEFAULT_SCOPE): StorageWriteResult {
+  // Hapus key lama terlebih dahulu
+  const storage = getStorage();
+  if (storage) {
+    try {
+      storage.removeItem('_chemiverse_user_state');
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  const current = readAllData();
+  if (current.status === 'rusak') {
+    return {
+      success: false,
+      status: 'rusak',
+      error: 'Data penyimpanan di peramban terdeteksi rusak. Reset progres dibatalkan.',
+    };
+  }
+  if (!current.success || !current.data) {
+    // Storage kosong atau tidak ada – anggap selesai
+    return { success: true, status: 'berhasil' };
+  }
+
+  const storageData = current.data;
+  const scopeObj = ensureScope(storageData, scope);
+  scopeObj.progress = { completedModules: [] };
+
+  return writeFullStorage(storageData);
+}
+
+/**
+ * Menghapus semua draf kuis yang sedang dikerjakan pada scope 'guest'.
+ * Riwayat hasil dan progres modul tidak tersentuh.
+ */
+export function resetAllDrafts(scope: string = DEFAULT_SCOPE): StorageWriteResult {
+  const current = readAllData();
+  if (current.status === 'rusak') {
+    return {
+      success: false,
+      status: 'rusak',
+      error: 'Data penyimpanan di peramban terdeteksi rusak. Reset draf dibatalkan.',
+    };
+  }
+  if (!current.success || !current.data) {
+    return { success: true, status: 'berhasil' };
+  }
+
+  const storageData = current.data;
+  const scopeObj = ensureScope(storageData, scope);
+  scopeObj.drafts = {};
+
+  return writeFullStorage(storageData);
+}
+
+/**
+ * Menghapus seluruh riwayat hasil kuis (records) pada scope 'guest'.
+ * Draf yang sedang dikerjakan dan progres modul tidak tersentuh.
+ */
+export function resetAllRecords(scope: string = DEFAULT_SCOPE): StorageWriteResult {
+  const current = readAllData();
+  if (current.status === 'rusak') {
+    return {
+      success: false,
+      status: 'rusak',
+      error: 'Data penyimpanan di peramban terdeteksi rusak. Reset riwayat dibatalkan.',
+    };
+  }
+  if (!current.success || !current.data) {
+    return { success: true, status: 'berhasil' };
+  }
+
+  const storageData = current.data;
+  const scopeObj = ensureScope(storageData, scope);
+  scopeObj.records = {};
+
+  return writeFullStorage(storageData);
+}
 

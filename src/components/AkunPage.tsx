@@ -88,7 +88,6 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
           newMap[r.id] = { status: sudah ? 'Terkirim' : 'Lokal' };
         }
         setStatusMap(newMap);
-
       } catch (e) {
         console.error('Gagal memuat riwayat kuis cloud:', e);
       } finally {
@@ -176,9 +175,25 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
     void jalankan(() => masukEmail(email, sandi, ingat));
   }
 
+  async function cobaDaftarUlang() {
+    setProses(true);
+    setGalat('');
+    try {
+      const akun = await getAccess();
+      setAkses(akun);
+      await muatDataRiwayat(akun);
+      if (!akun.anggota && !akun.guru) {
+        setGalat('Akun belum dapat didaftarkan. Periksa koneksi lalu coba lagi.');
+      }
+    } catch (e) {
+      setGalat(pesanError(e));
+    }
+    setProses(false);
+  }
+
   async function prosesKirim(record: QuizRecord) {
-    if (!akses?.anggota && !akses?.guru) {
-      setGalat('Hanya akun yang tercantum di daftar kelas (members/) yang boleh mengirim.');
+    if (!akses?.anggota) {
+      setGalat('Akun siswa belum terdaftar. Tekan "Coba daftarkan ulang" lalu kirim lagi.');
       setSelectedRecordForConfirm(null);
       return;
     }
@@ -276,19 +291,23 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
                     akses.guru ? 'is-guru' : akses.anggota ? 'is-anggota' : 'is-belum'
                   }`}
                 >
-                  {akses.guru
-                    ? 'Guru'
-                    : akses.anggota
-                      ? 'Anggota kelas'
-                      : 'Belum terdaftar di kelas'}
+                  {akses.guru ? 'Guru' : akses.anggota ? 'Siswa' : 'Belum terdaftar'}
                 </span>
               </dd>
             </dl>
 
             {!akses.guru && !akses.anggota && (
               <p className="akun-muted">
-                Kamu tetap bisa belajar. Hasil kuis baru bisa dikirim ke guru setelah pengelola
-                menambahkan akunmu ke daftar kelas (<code>members/</code>).
+                Akunmu belum berhasil didaftarkan sebagai siswa (biasanya karena koneksi).
+                Kamu tetap bisa belajar.{' '}
+                <button
+                  type="button"
+                  className="akun-link"
+                  disabled={proses}
+                  onClick={() => void cobaDaftarUlang()}
+                >
+                  Coba daftarkan ulang
+                </button>
               </p>
             )}
 
@@ -359,7 +378,7 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
                     const isMenunggu = infoStatus.status === 'Menunggu kirim';
                     const isGagal = infoStatus.status === 'Gagal mengirim';
                     const isLokal = infoStatus.status === 'Lokal';
-                    const bolehKirim = Boolean(akses.anggota || akses.guru);
+                    const bolehKirim = Boolean(akses.anggota);
 
                     return (
                       <li key={r.id} className="akun-record-item">
@@ -404,7 +423,7 @@ const AkunPage = ({ onNavigate }: AkunPageProps) => {
                               title={
                                 bolehKirim
                                   ? 'Kirim hasil ini ke guru kelas'
-                                  : 'Hanya akun yang tercantum di members/ yang boleh mengirim'
+                                  : 'Akun guru tidak mengirim hasil kuis'
                               }
                             >
                               Kirim ke Kelas

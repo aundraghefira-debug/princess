@@ -1,7 +1,8 @@
 // src/components/KirimHasilKuis.tsx
-// Komponen untuk mengirim hasil kuis lokal ke Firestore setelah siswa masuk.
+// Hasil kuis otomatis dikirim ke guru bila siswa sudah login.
+// Jika gagal, tombol "Coba kirim lagi" tetap memakai ID percobaan yang sama.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { QuizRecord } from '../lib/localStore';
 import {
   cloudTersedia,
@@ -27,45 +28,14 @@ export function KirimHasilKuis({ hasil, onBerhasilKirim }: KirimHasilKuisProps) 
   const [status, setStatus] = useState<StatusPengiriman>('Lokal');
   const [penyebabGagal, setPenyebabGagal] = useState('');
   const [konfirmasiTerbuka, setKonfirmasiTerbuka] = useState(false);
-
-  // Periksa login dan apakah hasil ini sudah pernah dikirim sebelumnya
-  useEffect(() => {
-    if (!cloudAda) return;
-
-    let aktif = true;
-    void (async () => {
-      try {
-        const akun = await getAccess();
-        if (!aktif) return;
-        setAkses(akun);
-
-        if (akun.uid) {
-          const mine = await listMine();
-          if (!aktif) return;
-          const sudahAda = mine.some((m) => m.id === hasil.id);
-          if (sudahAda) {
-            setStatus('Terkirim');
-          }
-        }
-      } catch {
-        // Abaikan error saat inisialisasi awal
-      } finally {
-        if (aktif) setMemuatAkses(false);
-      }
-    })();
-
-    return () => {
-      aktif = false;
-    };
-  }, [cloudAda, hasil.id]);
+  const sudahOtomatisRef = useRef<string | null>(null);
 
   async function jalankanKirim() {
     setKonfirmasiTerbuka(false);
     setStatus('Menunggu kirim');
     setPenyebabGagal('');
-
     try {
-      await saveAttempt(hasil);
+      await saveAttempt(hasil); // hasil.id sama => retry aman
       setStatus('Terkirim');
       onBerhasilKirim?.();
     } catch (e) {
@@ -74,10 +44,39 @@ export function KirimHasilKuis({ hasil, onBerhasilKirim }: KirimHasilKuisProps) 
     }
   }
 
-  function batalkanKirim() {
-    setKonfirmasiTerbuka(false);
-    // Batal = hasil tetap lokal
-  }
+  // Periksa akun, lalu kirim otomatis (sekali per ID percobaan)
+  useEffect(() => {
+    if (!cloudAda) return;
+    let aktif = true;
+    void (async () => {
+      try {
+        const akun = await getAccess();
+        if (!aktif) return;
+        setAkses(akun);
+        if (!akun.uid || akun.guru || !akun.anggota) return;
+
+        const mine = await listMine();
+        if (!aktif) return;
+        if (mine.some((m) => m.id === hasil.id)) {
+          setStatus('Terkirim');
+          return;
+        }
+        if (sudahOtomatisRef.current === hasil.id) return;
+        sudahOtomatisRef.current = hasil.id;
+        await jalankanKirim();
+      } catch {
+        // Abaikan error saat inisialisasi awal
+      } finally {
+        if (aktif) setMemuatAkses(false);
+      }
+    })();
+    return () => {
+      aktif = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cloudAda, hasil.id]);
+
+  const bolehKirim = Boolean(akses?.uid && akses.anggota && !akses.guru);
 
   return (
     <div className="khk-box">
@@ -86,7 +85,6 @@ export function KirimHasilKuis({ hasil, onBerhasilKirim }: KirimHasilKuisProps) 
           <span>☁️</span>
           <span>Sinkronisasi ke Guru Kelas</span>
         </span>
-
         <span
           className={`status-badge ${
             status === 'Terkirim'
@@ -104,14 +102,12 @@ export function KirimHasilKuis({ hasil, onBerhasilKirim }: KirimHasilKuisProps) 
 
       {status === 'Terkirim' && (
         <div className="khk-success-msg">
-          <span>✓ Hasil kuis ini sudah tersimpan di cloud dan dapat dibaca oleh guru kelas.</span>
+          <span>✓ Hasil kuis sudah terkirim ke guru kelas.</span>
         </div>
       )}
 
       {status === 'Menunggu kirim' && (
-        <p className="khk-desc">
-          Sedang mengirimkan hasil kuis ke cloud guru kelas... Mohon tunggu.
-        </p>
+        <p className="khk-desc">Mengirim hasil kuis ke guru kelas... Mohon tunggu.</p>
       )}
 
       {status === 'Gagal mengirim' && (
@@ -119,75 +115,73 @@ export function KirimHasilKuis({ hasil, onBerhasilKirim }: KirimHasilKuisProps) 
           <div className="khk-error-detail" role="alert">
             <strong>Gagal mengirim:</strong> {penyebabGagal || 'Terjadi kesalahan sistem.'}
           </div>
-          <div className="khk-actions">
-            <button
-              type="button"
-              className="khk-btn khk-btn-retry"
-              onClick={() => setKonfirmasiTerbuka(true)}
-            >
-              Coba kirim lagi
-            </button>
-          </div>
+          {!konfirmasiTerbuka && (
+            <div className="khk-actions">
+              <button
+                type="button"
+                className="khk-btn khk-btn-retry"
+                onClick={() => setKonfirmasiTerbuka(true)}
+              >
+                Coba kirim lagi
+              </button>
+            </div>
+          )}
         </>
       )}
 
       {status === 'Lokal' && (
         <>
           {memuatAkses && <p className="khk-desc">Memeriksa status akun...</p>}
-
           {!memuatAkses && !akses?.uid && (
             <p className="khk-desc">
-              Hasil kuis ini tersimpan pada perangkat Anda (Lokal). Masuk dengan akun kelas di menu{' '}
-              <strong>Akun</strong> jika ingin mengirimkannya ke guru.
+              Hasil tersimpan di perangkat ini saja. Masuk dengan akun di menu <strong>Akun</strong>{' '}
+              agar hasil kuis berikutnya langsung terkirim ke guru.
             </p>
           )}
-
-          {!memuatAkses && akses?.uid && !akses.anggota && !akses.guru && (
+          {!memuatAkses && akses?.uid && akses.guru && (
+            <p className="khk-desc">Akun guru tidak mengirim hasil kuis.</p>
+          )}
+          {!memuatAkses && akses?.uid && !akses.guru && !akses.anggota && (
             <p className="khk-desc">
-              Akunmu ({akses.email}) belum terdaftar di daftar anggota kelas (<code>members/</code>).
-              Hanya akun yang tercantum di <code>members/</code> yang boleh mengirim hasil kuis.
+              Akun belum terdaftar sebagai siswa. Buka menu <strong>Akun</strong> lalu tekan
+              "Coba daftarkan ulang".
             </p>
           )}
-
-          {!memuatAkses && akses?.uid && (akses.anggota || akses.guru) && !konfirmasiTerbuka && (
-            <>
-              <p className="khk-desc">
-                Hasil ini tersimpan di perangkat lokal. Kamu dapat mengirimkannya ke guru kelas sekarang.
-              </p>
-              <div className="khk-actions">
-                <button
-                  type="button"
-                  className="khk-btn khk-btn-primary"
-                  onClick={() => setKonfirmasiTerbuka(true)}
-                >
-                  Kirim Hasil ke Guru
-                </button>
-              </div>
-            </>
-          )}
-
-          {konfirmasiTerbuka && akses && (
-            <div className="khk-confirm-panel" role="dialog" aria-labelledby="khk-dialog-title">
-              <h4 id="khk-dialog-title" className="khk-confirm-title">
-                Konfirmasi Pengiriman Hasil
-              </h4>
-              <p className="khk-confirm-meta">
-                <strong>Akun tujuan:</strong> {akses.email} ({akses.anggota?.alias || 'Tanpa alias'})
-              </p>
-              <div className="khk-confirm-warning" role="alert">
-                ⚠️ <strong>Perhatian:</strong> Guru kelas dapat membaca hasil kuis ini beserta nama/alias akunmu.
-              </div>
-              <div className="khk-actions">
-                <button type="button" className="khk-btn khk-btn-primary" onClick={jalankanKirim}>
-                  Kirim Sekarang
-                </button>
-                <button type="button" className="khk-btn khk-btn-ghost" onClick={batalkanKirim}>
-                  Batal
-                </button>
-              </div>
+          {!memuatAkses && bolehKirim && (
+            <div className="khk-actions">
+              <button
+                type="button"
+                className="khk-btn khk-btn-primary"
+                onClick={() => setKonfirmasiTerbuka(true)}
+              >
+                Kirim Hasil ke Guru
+              </button>
             </div>
           )}
         </>
+      )}
+
+      {konfirmasiTerbuka && akses && (status === 'Lokal' || status === 'Gagal mengirim') && (
+        <div className="khk-confirm-panel" role="dialog" aria-labelledby="khk-dialog-title">
+          <h4 id="khk-dialog-title" className="khk-confirm-title">
+            Konfirmasi Pengiriman Hasil
+          </h4>
+          <p className="khk-confirm-meta">
+            <strong>Akun tujuan:</strong> {akses.email} ({akses.anggota?.alias || 'Tanpa alias'})
+          </p>
+          <div className="khk-actions">
+            <button type="button" className="khk-btn khk-btn-primary" autoFocus onClick={jalankanKirim}>
+              Kirim Sekarang
+            </button>
+            <button
+              type="button"
+              className="khk-btn khk-btn-ghost"
+              onClick={() => setKonfirmasiTerbuka(false)}
+            >
+              Batal
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
