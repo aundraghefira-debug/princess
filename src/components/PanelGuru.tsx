@@ -28,6 +28,7 @@ import {
   type ItemMiskonsepsi,
 } from '../lib/analisisHasil';
 import './PanelGuru.css';
+import GrafikSiswa from './GrafikSiswa';
 
 interface PanelGuruProps {
   onNavigate: (halaman: Halaman) => void;
@@ -951,6 +952,7 @@ export const PanelGuru: FC<PanelGuruProps> = ({ onNavigate, onPilihSiswa }) => {
 
               {/* Body Modal */}
               <div className="pg-modal-body">
+                                <GrafikSiswa attempts={siswaDetail.attempts} />
                 {/* Pemilih Riwayat Percobaan Siswa */}
                 <div className="pg-modal-section pg-attempt-picker">
                   <div className="pg-attempt-picker-head">
