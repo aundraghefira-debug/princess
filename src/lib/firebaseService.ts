@@ -1,6 +1,8 @@
 // src/lib/firebaseService.ts
 // Layanan login Firebase: Google dan Email/Sandi.
 // Kirim dan baca hasil kuis (attempts) mengikuti kontrak docs/DATABASE.md.
+// Aturan akses: satu akun guru (settings/classroom). Akun lain yang login
+// otomatis menjadi siswa (members/UID dibuat otomatis saat pertama kali masuk).
 
 import { initializeApp } from 'firebase/app';
 import {
@@ -90,7 +92,7 @@ export function pesanError(error: unknown): string {
     case 'auth/popup-blocked':
       return 'Popup diblokir browser. Izinkan popup untuk situs ini.';
     case 'permission-denied':
-      return 'Akses ditolak. Pastikan akunmu terdaftar di daftar kelas (members/).';
+      return 'Akses ditolak oleh server. Pastikan kamu sudah masuk dan aturan Firestore sudah diperbarui.';
     case 'unavailable':
       return 'Layanan cloud tidak dapat dihubungi. Periksa koneksi internet.';
     default:
@@ -156,22 +158,49 @@ export function pantauLogin(callback: (user: User | null) => void): () => void {
   return onAuthStateChanged(clients().auth, callback);
 }
 
-/** Membaca peran akun: guru (UID di settings/classroom) dan anggota kelas (members/UID). */
+/** Alias bawaan siswa: nama akun, atau bagian depan email. Maksimal 60 karakter. */
+function aliasDariAkun(user: User): string {
+  const nama = user.displayName?.trim();
+  const dasar = nama || user.email?.split('@')[0] || 'Siswa';
+  return dasar.slice(0, 60);
+}
+
+/**
+ * Membaca peran akun.
+ * - Guru: UID cocok dengan settings/classroom.teacherUid.
+ * - Selain guru: siswa. Dokumen members/UID dibuat otomatis bila belum ada.
+ */
 export async function getAccess(): Promise<AksesAkun> {
   const user = await getIdentity();
   if (!user) return { uid: null, email: null, guru: false, anggota: null };
 
   const { db } = clients();
+  const memberRef = doc(db, 'members', user.uid);
   const [settings, member] = await Promise.all([
     getDocFromServer(doc(db, 'settings', 'classroom')).catch(() => null),
-    getDocFromServer(doc(db, 'members', user.uid)).catch(() => null),
+    getDocFromServer(memberRef).catch(() => null),
   ]);
 
-  const dataAnggota = member?.exists() ? (member.data() as { alias?: string }) : null;
+  const guru = settings?.data()?.teacherUid === user.uid;
+  let dataAnggota = member?.exists() ? (member.data() as { alias?: string }) : null;
+
+  // Siswa baru: daftarkan otomatis ke kelas
+  if (!guru && !dataAnggota && member !== null) {
+    const alias = aliasDariAkun(user);
+    try {
+      await setDoc(memberRef, { alias, createdAt: serverTimestamp() });
+      dataAnggota = { alias };
+    } catch {
+      // Mungkin sudah dibuat oleh pemanggilan lain di saat yang sama: baca ulang
+      const ulang = await getDocFromServer(memberRef).catch(() => null);
+      dataAnggota = ulang?.exists() ? (ulang.data() as { alias?: string }) : null;
+    }
+  }
+
   return {
     uid: user.uid,
     email: user.email,
-    guru: settings?.data()?.teacherUid === user.uid,
+    guru,
     anggota: dataAnggota ? { alias: dataAnggota.alias ?? '' } : null,
   };
 }
@@ -238,7 +267,7 @@ function petakanDokumen(id: string, data: Record<string, unknown>): AttemptRecor
  *   dianggap berhasil tanpa menulis ulang (retry aman, tidak menggandakan data).
  * - Jika ID sudah ada tetapi isinya berbeda, pengiriman ditolak.
  * - Berhasil hanya jika server mengonfirmasi dokumen yang sama.
- * - Hanya akun yang tercantum di members/ yang boleh mengirim.
+ * - Setiap akun siswa yang login boleh mengirim (terdaftar otomatis).
  */
 export async function saveAttempt(record: {
   id: string;
@@ -259,7 +288,7 @@ export async function saveAttempt(record: {
 
   const access = await getAccess();
   if (!access.anggota) {
-    throw new Error('Hanya akun yang tercantum di daftar kelas (members/) yang boleh mengirim hasil.');
+    throw new Error('Akun siswa belum dapat didaftarkan ke kelas. Periksa koneksi lalu coba kirim lagi.');
   }
 
   const { db } = clients();

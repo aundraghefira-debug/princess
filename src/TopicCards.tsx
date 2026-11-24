@@ -14,9 +14,19 @@ const THEME_CONFIGS = [
   { themeColor: 'emerald' as const, badgeIcon: '🧪' },
 ];
 
+/** Mengecek apakah sebuah modul sudah ditandai selesai di userState. */
+function modulSelesai(userState: ChemiVerseState | undefined, moduleId: string): boolean {
+  return Boolean(userState?.completed_modules?.includes(moduleId));
+}
+
 export const TopicCards: React.FC<TopicCardsProps> = ({
+  userState,
   onSelectModule,
 }) => {
+  const totalModul = modules.length;
+  const jumlahSelesai = modules.filter((_, i) => modulSelesai(userState, `modul_${i + 1}`)).length;
+  const persen = totalModul > 0 ? Math.round((jumlahSelesai / totalModul) * 100) : 0;
+
   return (
     <section id="modul-belajar" className="topic-cards-section">
       <div className="section-header-block">
@@ -30,6 +40,48 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
           Disusun secara bertingkat untuk mengatasi miskonsepsi Tiga Tingkat Johnstone, 
           limbo teori Brønsted-Lowry &amp; Lewis, serta <em>logarithmic blind spot</em> pada perhitungan pH.
         </p>
+
+        {/* Ringkasan progres modul */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            maxWidth: 420,
+            margin: '1.25rem auto 0',
+            padding: '1rem 1.25rem',
+            borderRadius: 16,
+            background: 'rgba(15, 30, 45, 0.8)',
+            border: '1px solid rgba(34, 211, 238, 0.25)',
+            textAlign: 'left',
+          }}
+        >
+          <div style={{ fontSize: '2rem' }} aria-hidden="true">🧪</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '1.6rem', fontWeight: 700 }}>
+              {jumlahSelesai} / {totalModul}
+            </div>
+            <div style={{ fontWeight: 600 }}>Modul Diselesaikan</div>
+            <div
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={totalModul}
+              aria-valuenow={jumlahSelesai}
+              aria-label="Progres modul diselesaikan"
+              style={{ height: 8, borderRadius: 999, background: 'rgba(148,163,184,0.25)', marginTop: 8, overflow: 'hidden' }}
+            >
+              <div
+                style={{
+                  width: `${persen}%`,
+                  height: '100%',
+                  borderRadius: 999,
+                  background: 'linear-gradient(90deg, #3b82f6, #22d3ee)',
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="modules-cards-grid">
@@ -37,8 +89,8 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
           const config = THEME_CONFIGS[idx % THEME_CONFIGS.length];
           const moduleNumber = idx + 1;
           const moduleId = `modul_${moduleNumber}`;
+          const selesai = modulSelesai(userState, moduleId);
 
-          // Ambil daftar judul sub-materi yang tidak kosong dari subMateri[].judul
           const validSubMateri = (mod.subMateri || []).filter(
             (sub) => sub.judul && sub.judul.trim().length > 0
           );
@@ -48,20 +100,33 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
               key={mod.id || moduleId}
               className={`module-card card-theme-${config.themeColor}`}
             >
-              {/* Card Top Bar: Nomor Modul & Ikon */}
               <div className="card-top-bar">
                 <div className="module-number-pill">
                   <span className="mod-icon">{config.badgeIcon}</span>
                   <span className="mod-tag">Modul {moduleNumber}</span>
                 </div>
+                {selesai && (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      padding: '0.2rem 0.65rem',
+                      borderRadius: 999,
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: '#4ade80',
+                      border: '1px solid rgba(74, 222, 128, 0.5)',
+                      background: 'rgba(74, 222, 128, 0.12)',
+                    }}
+                  >
+                    ✓ Selesai
+                  </span>
+                )}
               </div>
 
-              {/* Judul Modul (dari chemData.ts) */}
               <div className="card-heading-group">
                 <h3 className="card-main-title">{mod.judul}</h3>
               </div>
 
-              {/* Daftar Judul Sub-Materi (jika data ada) */}
               {validSubMateri.length > 0 && (
                 <div className="card-submateri-list">
                   <span className="submateri-list-title">Sub-Materi:</span>
@@ -76,7 +141,6 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
                 </div>
               )}
 
-              {/* Footer Kartu: Tombol "Mulai Belajar" */}
               <div className="card-action-footer">
                 <button
                   type="button"
@@ -84,7 +148,7 @@ export const TopicCards: React.FC<TopicCardsProps> = ({
                   className="btn btn-card-primary"
                   onClick={() => onSelectModule && onSelectModule(moduleId)}
                 >
-                  <span>Mulai Belajar</span>
+                  <span>{selesai ? 'Buka Lagi' : 'Mulai Belajar'}</span>
                   <span className="arrow-icon">→</span>
                 </button>
               </div>

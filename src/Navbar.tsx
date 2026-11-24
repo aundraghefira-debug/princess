@@ -180,6 +180,17 @@ export const Navbar: FC<NavbarProps> = ({
               Panel Guru
             </button>
           )}
+          {onResetProgress && (
+            <button
+              type="button"
+              id="nav-kelola-data"
+              className="nav-link"
+              onClick={onResetProgress}
+              title="Reset progres"
+            >
+              🔄 Reset Progres
+            </button>
+          )}
           {!namaAkun && (
             <button
               type="button"
@@ -292,7 +303,7 @@ export const Navbar: FC<NavbarProps> = ({
                   onResetProgress();
                 }}
               >
-                🔄 Reset Progres Lokal
+                🔄 Reset Progres
               </button>
             )}
           </nav>
